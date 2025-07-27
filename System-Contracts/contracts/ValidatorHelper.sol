@@ -171,6 +171,9 @@ contract ValidatorHelper is Ownable {
     mapping(address => bool) public admins;
     address[] public adminList;
     
+    // Pause functionality
+    bool public paused = false;
+    
     // Annual reward rate (100% = 10000, so 100% annual return)
     uint256 public annualRewardRate = 10000; // 100% annual return
     uint256 public constant RATE_PRECISION = 10000;
@@ -207,10 +210,18 @@ contract ValidatorHelper is Ownable {
     event PriceUpdated(uint256 newPriceInCents, uint256 timestamp);
     event RewardSystemToggled(bool useDollarBased);
     event AnnualDollarRewardUpdated(uint256 dollarAmountInCents);
+    event ContractPaused(address by, uint256 timestamp);
+    event ContractUnpaused(address by, uint256 timestamp);
     
     // Modifier for admin-only functions
     modifier onlyAdmin() {
         require(admins[msg.sender] || msg.sender == owner(), "Not authorized: must be admin or owner");
+        _;
+    }
+    
+    // Modifier for pause functionality
+    modifier whenNotPaused() {
+        require(!paused, "Contract is paused");
         _;
     }
     
@@ -272,7 +283,7 @@ contract ValidatorHelper is Ownable {
         return true;
     }
 
-    function withdrawStakingReward(address validator) external {
+    function withdrawStakingReward(address validator) external whenNotPaused {
         require(validator == tx.origin, "caller should be real validator");
         require(approvedForRewards[validator], "Validator not approved for rewards");
         
@@ -292,7 +303,7 @@ contract ValidatorHelper is Ownable {
     }
 
     // NEW: Withdraw annual staking rewards (100% of staked amount per year)
-    function withdrawAnnualStakingReward(address validator) external {
+    function withdrawAnnualStakingReward(address validator) external whenNotPaused {
         require(validator == tx.origin, "caller should be real validator");
         require(approvedForRewards[validator], "Validator not approved for annual rewards");
         
@@ -790,5 +801,22 @@ contract ValidatorHelper is Ownable {
     function checkValidator(address /* user */) external pure returns(bool){
         //this function is for UI compatibility
         return true;
+    }
+
+    // NEW: Pause functionality
+    function pause() external onlyOwner {
+        require(!paused, "Contract is already paused");
+        paused = true;
+        emit ContractPaused(msg.sender, block.timestamp);
+    }
+
+    function unpause() external onlyOwner {
+        require(paused, "Contract is not paused");
+        paused = false;
+        emit ContractUnpaused(msg.sender, block.timestamp);
+    }
+
+    function isPaused() external view returns (bool) {
+        return paused;
     }
 }
