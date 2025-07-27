@@ -184,6 +184,16 @@ contract ValidatorHelper is Ownable {
     uint256 public constant RATE_PRECISION = 10000;
     uint256 public constant SECONDS_PER_YEAR = 365 days;
     
+    // Price oracle system for dollar-based rewards
+    uint256 public splendorPriceUSD = 38; // Price in cents (0.38 USD = 38 cents)
+    uint256 public constant PRICE_PRECISION = 100; // For cents precision
+    uint256 public lastPriceUpdate;
+    address public priceOracle; // Address authorized to update price
+    
+    // Dollar-based reward system
+    bool public useDollarBasedRewards = false; // Toggle between % and $ based
+    uint256 public annualDollarRewardPerToken = 38; // 38 cents per token annually (100% at $0.38)
+    
     //events
     event Stake(address validator, uint256 amount, uint256 timestamp);
     event Unstake(address validator, uint256 timestamp);
@@ -193,6 +203,9 @@ contract ValidatorHelper is Ownable {
     event AdminAdded(address admin);
     event AdminRemoved(address admin);
     event FundsTransferred(address to, uint256 amount);
+    event PriceUpdated(uint256 newPriceInCents, uint256 timestamp);
+    event RewardSystemToggled(bool useDollarBased);
+    event AnnualDollarRewardUpdated(uint256 dollarAmountInCents);
     
     // Modifier for admin-only functions
     modifier onlyAdmin() {
@@ -304,8 +317,18 @@ contract ValidatorHelper is Ownable {
         // Calculate time since last claim
         uint256 timeSinceLastClaim = block.timestamp - lastAnnualRewardClaim[validator];
         
-        // Calculate annual reward: 100% of staked amount per year
-        uint256 annualReward = (stakedAmount * annualRewardRate * timeSinceLastClaim) / (RATE_PRECISION * SECONDS_PER_YEAR);
+        uint256 annualReward;
+        
+        if (useDollarBasedRewards) {
+            // Dollar-based rewards: Fixed dollar amount per token annually
+            // annualDollarRewardPerToken is in cents, convert to tokens
+            // Example: If 1 SPLD = $0.38 (38 cents) and reward is $0.38 per token (38 cents)
+            // Then reward = (stakedAmount * 38 cents * time) / (38 cents current price * 1 year)
+            annualReward = (stakedAmount * annualDollarRewardPerToken * timeSinceLastClaim) / (splendorPriceUSD * SECONDS_PER_YEAR);
+        } else {
+            // Percentage-based rewards: 100% of staked amount per year
+            annualReward = (stakedAmount * annualRewardRate * timeSinceLastClaim) / (RATE_PRECISION * SECONDS_PER_YEAR);
+        }
         
         return annualReward;
     }
@@ -498,6 +521,64 @@ contract ValidatorHelper is Ownable {
     function changeAnnualRewardRate(uint256 newRate) external onlyOwner {
         require(newRate <= 50000, "Annual reward rate cannot exceed 500%"); // Max 500% annual return
         annualRewardRate = newRate;
+    }
+
+    // NEW: Price oracle management functions
+    function setPriceOracle(address newOracle) external onlyOwner {
+        require(newOracle != address(0), "Invalid oracle address");
+        priceOracle = newOracle;
+    }
+
+    function updateSplendorPrice(uint256 newPriceInCents) external {
+        require(msg.sender == priceOracle || msg.sender == owner(), "Not authorized to update price");
+        require(newPriceInCents > 0, "Price must be greater than 0");
+        require(newPriceInCents <= 100000, "Price too high (max $1000)"); // Max $1000 per token
+        
+        splendorPriceUSD = newPriceInCents;
+        lastPriceUpdate = block.timestamp;
+        
+        emit PriceUpdated(newPriceInCents, block.timestamp);
+    }
+
+    function toggleRewardSystem(bool useDollarBased) external onlyOwner {
+        useDollarBasedRewards = useDollarBased;
+        emit RewardSystemToggled(useDollarBased);
+    }
+
+    function setAnnualDollarReward(uint256 dollarAmountInCents) external onlyOwner {
+        require(dollarAmountInCents > 0, "Dollar amount must be greater than 0");
+        require(dollarAmountInCents <= 10000, "Dollar amount too high (max $100)"); // Max $100 per token annually
+        
+        annualDollarRewardPerToken = dollarAmountInCents;
+        emit AnnualDollarRewardUpdated(dollarAmountInCents);
+    }
+
+    // NEW: View functions for price and reward system
+    function getPriceInfo() external view returns (
+        uint256 currentPriceInCents,
+        uint256 lastUpdate,
+        address oracle,
+        bool isDollarBasedRewards,
+        uint256 dollarRewardPerToken
+    ) {
+        return (
+            splendorPriceUSD,
+            lastPriceUpdate,
+            priceOracle,
+            useDollarBasedRewards,
+            annualDollarRewardPerToken
+        );
+    }
+
+    function calculateDollarValueOfReward(address validator) external view returns (uint256 dollarValueInCents) {
+        uint256 tokenReward = viewAnnualStakingReward(validator);
+        if (tokenReward == 0) {
+            return 0;
+        }
+        
+        // Convert token reward to dollar value
+        dollarValueInCents = (tokenReward * splendorPriceUSD) / 1e18;
+        return dollarValueInCents;
     }
 
     // NEW: Get validator approval info
