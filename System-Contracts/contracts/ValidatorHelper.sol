@@ -189,10 +189,19 @@ contract ValidatorHelper is Ownable {
     uint256 public constant PRICE_PRECISION = 100; // For cents precision
     uint256 public lastPriceUpdate;
     address public priceOracle; // Address authorized to update price
+    uint256 public constant PRICE_UPDATE_COOLDOWN = 24 hours; // 24 hour cooldown between price updates
     
-    // Dollar-based reward system
-    bool public useDollarBasedRewards = false; // Toggle between % and $ based
-    uint256 public annualDollarRewardPerToken = 38; // 38 cents per token annually (100% at $0.38)
+    // Tier-based reward system
+    bool public useTierBasedRewards = true; // Use tier-based rewards by default
+    
+    // Validator tiers and their annual USD rewards (in cents)
+    struct ValidatorTier {
+        uint256 minStakingAmount;    // Minimum staking amount in SPLD (18 decimals)
+        uint256 annualRewardCents;   // Annual reward in cents
+        string tierName;             // Tier name for display
+    }
+    
+    ValidatorTier[3] public validatorTiers;
     
     //events
     event Stake(address validator, uint256 amount, uint256 timestamp);
@@ -217,6 +226,28 @@ contract ValidatorHelper is Ownable {
         // Owner is automatically an admin
         admins[msg.sender] = true;
         adminList.push(msg.sender);
+        
+        // Initialize validator tiers based on $0.38 SPLD price
+        // Tier 1: $1,500 ÷ $0.38 = 3,947 SPLD → earns $1,500/year
+        validatorTiers[0] = ValidatorTier({
+            minStakingAmount: 3947 * 1e18,  // 3,947 SPLD
+            annualRewardCents: 150000,      // $1,500 in cents
+            tierName: "Tier 1"
+        });
+        
+        // Tier 2: $15,000 ÷ $0.38 = 39,474 SPLD → earns $15,000/year  
+        validatorTiers[1] = ValidatorTier({
+            minStakingAmount: 39474 * 1e18, // 39,474 SPLD
+            annualRewardCents: 1500000,     // $15,000 in cents
+            tierName: "Tier 2"
+        });
+        
+        // Tier 3: $150,000 ÷ $0.38 = 394,737 SPLD → earns $150,000/year
+        validatorTiers[2] = ValidatorTier({
+            minStakingAmount: 394737 * 1e18, // 394,737 SPLD
+            annualRewardCents: 15000000,     // $150,000 in cents
+            tierName: "Tier 3"
+        });
     }
 
     receive() external payable {
@@ -319,18 +350,63 @@ contract ValidatorHelper is Ownable {
         
         uint256 annualReward;
         
-        if (useDollarBasedRewards) {
-            // Dollar-based rewards: Fixed dollar amount per token annually
-            // annualDollarRewardPerToken is in cents, convert to tokens
-            // Example: If 1 SPLD = $0.38 (38 cents) and reward is $0.38 per token (38 cents)
-            // Then reward = (stakedAmount * 38 cents * time) / (38 cents current price * 1 year)
-            annualReward = (stakedAmount * annualDollarRewardPerToken * timeSinceLastClaim) / (splendorPriceUSD * SECONDS_PER_YEAR);
+        if (useTierBasedRewards) {
+            // Tier-based rewards: Fixed dollar amount based on validator tier
+            uint256 tierRewardCents = getValidatorTierReward(stakedAmount);
+            if (tierRewardCents == 0) {
+                return 0; // Validator doesn't meet minimum tier requirements
+            }
+            
+            // Convert tier reward from cents to SPLD tokens based on current price
+            // tierRewardCents / splendorPriceUSD = annual reward in SPLD
+            // Then calculate pro-rated amount based on time since last claim
+            annualReward = (tierRewardCents * 1e18 * timeSinceLastClaim) / (splendorPriceUSD * SECONDS_PER_YEAR);
         } else {
             // Percentage-based rewards: 100% of staked amount per year
             annualReward = (stakedAmount * annualRewardRate * timeSinceLastClaim) / (RATE_PRECISION * SECONDS_PER_YEAR);
         }
         
         return annualReward;
+    }
+
+    // NEW: Get validator tier reward based on staked amount
+    function getValidatorTierReward(uint256 stakedAmount) public view returns(uint256 tierRewardCents) {
+        // Check tiers from highest to lowest
+        for (int256 i = 2; i >= 0; i--) {
+            if (stakedAmount >= validatorTiers[uint256(i)].minStakingAmount) {
+                return validatorTiers[uint256(i)].annualRewardCents;
+            }
+        }
+        return 0; // Doesn't meet minimum tier requirements
+    }
+
+    // NEW: Get validator tier info
+    function getValidatorTierInfo(address validator) external view returns (
+        uint256 currentTier,
+        string memory tierName,
+        uint256 minStakingRequired,
+        uint256 annualRewardCents,
+        uint256 stakedAmount,
+        bool meetsRequirement
+    ) {
+        (stakedAmount, , ) = valContract.getStakingInfo(validator, validator);
+        
+        // Find the validator's current tier
+        for (uint256 i = 2; i >= 0; i--) {
+            if (stakedAmount >= validatorTiers[i].minStakingAmount) {
+                return (
+                    i + 1, // Tier number (1-based)
+                    validatorTiers[i].tierName,
+                    validatorTiers[i].minStakingAmount,
+                    validatorTiers[i].annualRewardCents,
+                    stakedAmount,
+                    true
+                );
+            }
+        }
+        
+        // Doesn't meet minimum tier requirements
+        return (0, "No Tier", validatorTiers[0].minStakingAmount, 0, stakedAmount, false);
     }
 
     function viewValidatorRewards(address validator) public view returns(uint256 rewardAmount){
@@ -533,6 +609,7 @@ contract ValidatorHelper is Ownable {
         require(msg.sender == priceOracle || msg.sender == owner(), "Not authorized to update price");
         require(newPriceInCents > 0, "Price must be greater than 0");
         require(newPriceInCents <= 100000, "Price too high (max $1000)"); // Max $1000 per token
+        require(block.timestamp >= lastPriceUpdate + PRICE_UPDATE_COOLDOWN, "Price can only be updated once every 24 hours");
         
         splendorPriceUSD = newPriceInCents;
         lastPriceUpdate = block.timestamp;
@@ -540,17 +617,22 @@ contract ValidatorHelper is Ownable {
         emit PriceUpdated(newPriceInCents, block.timestamp);
     }
 
-    function toggleRewardSystem(bool useDollarBased) external onlyOwner {
-        useDollarBasedRewards = useDollarBased;
-        emit RewardSystemToggled(useDollarBased);
+    function toggleRewardSystem(bool useTierBased) external onlyOwner {
+        useTierBasedRewards = useTierBased;
+        emit RewardSystemToggled(useTierBased);
     }
 
-    function setAnnualDollarReward(uint256 dollarAmountInCents) external onlyOwner {
-        require(dollarAmountInCents > 0, "Dollar amount must be greater than 0");
-        require(dollarAmountInCents <= 10000, "Dollar amount too high (max $100)"); // Max $100 per token annually
+    // NEW: Update validator tier (owner only)
+    function updateValidatorTier(uint256 tierIndex, uint256 minStakingAmount, uint256 annualRewardCents, string calldata tierName) external onlyOwner {
+        require(tierIndex < 3, "Invalid tier index");
+        require(minStakingAmount > 0, "Staking amount must be greater than 0");
+        require(annualRewardCents > 0, "Reward amount must be greater than 0");
         
-        annualDollarRewardPerToken = dollarAmountInCents;
-        emit AnnualDollarRewardUpdated(dollarAmountInCents);
+        validatorTiers[tierIndex] = ValidatorTier({
+            minStakingAmount: minStakingAmount,
+            annualRewardCents: annualRewardCents,
+            tierName: tierName
+        });
     }
 
     // NEW: View functions for price and reward system
@@ -558,15 +640,13 @@ contract ValidatorHelper is Ownable {
         uint256 currentPriceInCents,
         uint256 lastUpdate,
         address oracle,
-        bool isDollarBasedRewards,
-        uint256 dollarRewardPerToken
+        bool isTierBasedRewards
     ) {
         return (
             splendorPriceUSD,
             lastPriceUpdate,
             priceOracle,
-            useDollarBasedRewards,
-            annualDollarRewardPerToken
+            useTierBasedRewards
         );
     }
 
