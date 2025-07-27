@@ -39,8 +39,7 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/tests"
 
-	// Force-load native and js pacakges, to trigger registration
-	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
+	// Force-load native packages, to trigger registration
 	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 )
 

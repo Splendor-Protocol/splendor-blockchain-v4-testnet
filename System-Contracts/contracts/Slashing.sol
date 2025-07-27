@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.17;
 
 import "./Params.sol";
 import "./Validators.sol";
@@ -303,7 +303,7 @@ contract Slashing is Params {
         uint256 _doubleSignJailTime,
         uint256 _evidenceValidityPeriod,
         uint256 _maxSlashingPercentage
-    ) external onlyOwner {
+    ) external onlyValidatorsContract {
         require(_maxSlashingPercentage <= 100, "Max slashing percentage cannot exceed 100%");
         
         doubleSignSlashAmount = _doubleSignSlashAmount;
@@ -326,9 +326,9 @@ contract Slashing is Params {
     }
     
     /**
-     * @dev Emergency function to clear slashing record (owner only) - for extreme cases
+     * @dev Emergency function to clear slashing record (validators contract only) - for extreme cases
      */
-    function emergencyClearSlashing(address validator) external onlyOwner {
+    function emergencyClearSlashing(address validator) external onlyValidatorsContract {
         slashingRecords[validator] = SlashingRecord(0, 0, 0, false);
         jailedUntil[validator] = 0;
     }

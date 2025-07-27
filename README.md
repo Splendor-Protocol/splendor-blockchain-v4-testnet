@@ -1,242 +1,164 @@
-# Splendor RPC Blockchain v4
+# Splendor Blockchain V4
 
-[![Security Status](https://img.shields.io/badge/Security-Audited-green.svg)](./SECURITY_FIXES_APPLIED.md)
-[![Byzantine Fault Tolerance](https://img.shields.io/badge/BFT-Implemented-blue.svg)](./BYZANTINE_FAULT_TOLERANCE_SOLUTION.md)
-[![EIP-1559](https://img.shields.io/badge/EIP--1559-Compliant-orange.svg)](./CHANGELOG.md)
+A high-performance blockchain network built on a modified Ethereum codebase with Congress consensus mechanism and integrated system contracts.
 
-A secure, high-performance blockchain network with Byzantine Fault Tolerance and EIP-1559 compliance.
+## Network Information
 
-## 🚀 Latest Release: v2.0.0 - Security Audit Implementation
+- **Network Name**: Splendor RPC
+- **RPC URL**: https://splendor-rpc.org/
+- **Chain ID**: 5758 (0x167E)
+- **Currency Symbol**: SPL
+- **Block Explorer**: https://splendor-rpc.org/
 
-**All critical security vulnerabilities have been addressed and the network is production-ready.**
+## Key Features
 
-### 🔒 Security Features
-- ✅ **Byzantine Fault Tolerance**: Complete protection against malicious validators
-- ✅ **Slashing Mechanism**: Economic penalties for validator misbehavior
-- ✅ **EIP-1559 Compliance**: Standards-compliant fee market mechanism
-- ✅ **Cryptographic Verification**: ECDSA-based double-sign detection
+### Consensus Mechanism
+- **Congress Consensus**: A Proof-of-Authority (PoA) based consensus mechanism
+- **Validator Management**: Dynamic validator set with staking and slashing mechanisms
+- **Block Time**: ~3 seconds average block time
+- **Finality**: Fast finality with validator signatures
 
-## 📋 Quick Start
+### Fee Distribution
+The network implements a unique fee distribution model with **no token burning**:
+- **Validators**: 60% of gas fees (infrastructure operators and investors)
+- **Stakers**: 30% of gas fees (passive participation rewards)
+- **Creator**: 10% of gas fees (protocol development fund)
+
+### System Contracts
+- **Validators Contract**: Manages validator registration, staking, and rewards
+- **Slashing Contract**: Handles validator penalties and slashing conditions
+- **Params Contract**: Network parameter management
+- **Proposal Contract**: Governance and proposal system
+
+## Architecture
+
+### Core Components
+1. **Core-Blockchain**: Modified go-ethereum node implementation
+2. **System-Contracts**: Solidity smart contracts for network governance
+3. **Congress Consensus**: Custom consensus engine for validator coordination
+
+### Network Parameters
+- **Gas Limit**: 30,000,000 per block
+- **Gas Price**: Dynamic pricing based on network congestion
+- **Validator Requirements**: Minimum stake and performance criteria
+- **Slashing Conditions**: Automated penalties for malicious behavior
+
+## Getting Started
 
 ### Prerequisites
-- Go 1.19+
-- Node.js 16+
+- Go 1.15 or higher
+- Node.js 14+ and npm
 - Git
 
-### Installation
+### Building the Node
 
 ```bash
 # Clone the repository
-git clone https://github.com/Splendor-Protocol/splendor-blockchain-v4.git
+git clone <repository-url>
 cd splendor-blockchain-v4
 
 # Build the blockchain node
 cd Core-Blockchain/node_src
-make geth
+go build -o geth.exe ./cmd/geth
 
-# Install smart contract dependencies
+# Deploy system contracts
 cd ../../System-Contracts
 npm install
+npx hardhat compile
 ```
 
 ### Running a Node
 
 ```bash
-# Start a validator node
+# Initialize the blockchain with genesis
 cd Core-Blockchain
-./node-start.sh
+./geth.exe init genesis.json
+
+# Start the node
+./geth.exe --config config.toml
 ```
 
-## 🏗️ Architecture
+### Network Configuration
 
-### Core Components
+The network uses a custom genesis configuration with:
+- Pre-deployed system contracts
+- Initial validator set
+- Network parameters optimized for performance
 
-#### 1. Core Blockchain (`Core-Blockchain/`)
-- **Consensus**: Congress consensus with Byzantine Fault Tolerance
-- **EIP-1559**: Compliant fee market implementation
-- **P2P Network**: Secure peer-to-peer communication
-- **State Management**: Efficient state storage and retrieval
+## Development
 
-#### 2. System Contracts (`System-Contracts/`)
-- **Validators.sol**: Validator management and staking
-- **Slashing.sol**: Byzantine fault punishment mechanism
-- **Params.sol**: Network parameter management
-- **Proposal.sol**: Governance proposal system
-
-### Network Economics
-
-| Participant | Fee Share | Role |
-|-------------|-----------|------|
-| **Validators** | 60% | Infrastructure investment and block production |
-| **Stakers** | 30% | Passive participation and network security |
-| **Creator** | 10% | Protocol development and maintenance |
-
-*No token burning - all fees are distributed to network participants*
-
-## 🔐 Security Audit Results
-
-### ✅ Resolved Critical Issues
-
-#### GLOBAL-03: Byzantine Fault Tolerance (CRITICAL)
-- **Status**: FULLY IMPLEMENTED
-- **Solution**: Complete slashing mechanism with cryptographic verification
-- **Impact**: Network can now handle up to 33% malicious validators
-
-#### EIP-01: EIP-1559 Compliance (HIGH)
-- **Status**: FIXED
-- **Solution**: Proper base fee calculation implementation
-- **Impact**: Dynamic fee market instead of free transactions
-
-#### Additional Fixes
-- **GAS-01**: Parameter consistency improvements
-- **CZC-03**: Deprecated function updates
-
-📖 **[View Complete Security Analysis](./SECURITY_FIXES_APPLIED.md)**
-
-## 🛡️ Byzantine Fault Tolerance
-
-### Slashing Mechanism
-- **Double-Sign Detection**: Cryptographic proof of conflicting signatures
-- **Economic Penalties**: Up to 50% stake loss + 1M base tokens
-- **Validator Jailing**: 24-hour suspension for violations
-- **Tier System**: Bronze/Silver/Gold/Platinum with different penalty rates
-
-### Evidence Submission
-Anyone can submit evidence of validator misbehavior:
-```solidity
-function submitDoubleSignEvidence(
-    bytes32 blockHash1,
-    bytes32 blockHash2,
-    bytes memory signature1,
-    bytes memory signature2,
-    address validator
-) external
-```
-
-📖 **[View BFT Implementation Guide](./BYZANTINE_FAULT_TOLERANCE_SOLUTION.md)**
-
-## 📊 Network Statistics
-
-### Consensus Parameters
-- **Block Time**: 1 second
-- **Epoch Length**: 200 blocks
-- **Validator Set Size**: Up to 10,000 active validators
-- **Minimum Stake**: 3,947 SPLD (Bronze Tier)
-
-### Economic Parameters
-- **Base Slashing**: 400 SPLD tokens (10% of Bronze minimum)
-- **Percentage Slashing**: Up to 20% of stake
-- **Jail Duration**: 86,400 blocks (24 hours)
-- **Unjail Process**: Validator voting (50%+1 majority) via Proposal contract
-
-## 🚀 Deployment
-
-### Production Deployment
-1. **Smart Contract Deployment**
-   ```bash
-   cd System-Contracts
-   npx hardhat deploy --network mainnet
-   ```
-
-2. **Node Configuration**
-   ```bash
-   cd Core-Blockchain
-   ./node-setup.sh
-   ```
-
-3. **Network Initialization**
-   ```bash
-   ./node-start.sh --validator --unlock <validator-address>
-   ```
-
-📖 **[View Complete Deployment Guide](./DEPLOYMENT_GUIDE.md)**
-
-## 🔧 Development
-
-### Building from Source
+### System Contracts Development
 
 ```bash
-# Build blockchain node
-cd Core-Blockchain/node_src
-make all
-
-# Compile smart contracts
-cd ../../System-Contracts
+cd System-Contracts
+npm install
 npx hardhat compile
-
-# Run tests
 npx hardhat test
 ```
 
-### Testing
+### Node Development
 
 ```bash
-# Run blockchain tests
 cd Core-Blockchain/node_src
-make test
-
-# Run smart contract tests
-cd ../../System-Contracts
-npx hardhat test
-
-# Run integration tests
-npm run test:integration
+go mod tidy
+go build ./cmd/geth
+go test ./...
 ```
 
-## 📚 Documentation
+## Governance
 
-- **[Changelog](./CHANGELOG.md)** - Complete version history
-- **[Security Fixes](./SECURITY_FIXES_APPLIED.md)** - Audit implementation summary
-- **[BFT Solution](./BYZANTINE_FAULT_TOLERANCE_SOLUTION.md)** - Byzantine fault tolerance guide
-- **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Production deployment instructions
+The network features on-chain governance through:
+- **Proposal System**: Community-driven proposals for network upgrades
+- **Validator Voting**: Weighted voting based on stake
+- **Parameter Updates**: Dynamic adjustment of network parameters
 
-## 🤝 Contributing
+## Security
+
+### Validator Security
+- Multi-signature validator management
+- Automated slashing for malicious behavior
+- Regular security audits and updates
+
+### Network Security
+- Congress consensus provides Byzantine fault tolerance
+- Validator rotation and performance monitoring
+- Real-time network monitoring and alerting
+
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-### Security Contributions
-For security-related contributions, please:
-1. Review our [Security Policy](./Core-Blockchain/node_src/SECURITY.md)
-2. Follow responsible disclosure practices
-3. Include comprehensive tests for security features
+## License
 
-## 📄 License
+This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
 
-This project is licensed under the GNU Lesser General Public License v3.0 - see the [LICENSE](./Core-Blockchain/node_src/COPYING.LESSER) file for details.
+## Support
 
-## 🌐 Network Information
+For technical support and questions:
+- GitHub Issues: [Repository Issues](https://github.com/your-repo/issues)
+- Documentation: [Network Documentation](https://docs.splendor-rpc.org/)
+- Community: [Discord Server](https://discord.gg/splendor)
 
-### Mainnet
-- **Network Name**: Splendor RPC
-- **Chain ID**: 2691
-- **RPC URL**: https://splendor-rpc.org/
-- **Explorer**: TBD
+## Roadmap
 
-### Testnet
-- **Network Name**: Splendor Testnet
-- **Chain ID**: 256
-- **RPC URL**: https://testnet.splendor-rpc.org/
-- **Faucet**: TBD
+### Phase 1 (Current)
+- ✅ Core blockchain implementation
+- ✅ System contracts deployment
+- ✅ Congress consensus mechanism
+- ✅ Fee distribution system
 
-## 📞 Support
+### Phase 2 (Upcoming)
+- [ ] Cross-chain bridge integration
+- [ ] Enhanced governance features
+- [ ] Mobile wallet support
+- [ ] Developer tooling improvements
 
-- **Documentation**: [GitHub Wiki](https://github.com/Splendor-Protocol/splendor-blockchain-v4/wiki)
-- **Issues**: [GitHub Issues](https://github.com/Splendor-Protocol/splendor-blockchain-v4/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Splendor-Protocol/splendor-blockchain-v4/discussions)
-
-## 🏆 Acknowledgments
-
-- Ethereum Foundation for EIP-1559 specification
-- Go-Ethereum team for the base implementation
-- Security auditors for identifying critical vulnerabilities
-- Community contributors for ongoing development
-
----
-
-**⚡ Splendor RPC - Secure, Fast, Decentralized**
-
-*Built with Byzantine Fault Tolerance and EIP-1559 compliance for the next generation of blockchain applications.*
+### Phase 3 (Future)
+- [ ] Layer 2 scaling solutions
+- [ ] Advanced DeFi integrations
+- [ ] Enterprise partnerships
+- [ ] Global validator network expansion

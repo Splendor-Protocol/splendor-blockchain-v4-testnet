@@ -37,7 +37,6 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 
 	// force-load js tracers to trigger registration
-	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
 )
 
 func TestDefaults(t *testing.T) {
