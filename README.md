@@ -7,7 +7,7 @@ A high-performance blockchain network built on a modified Ethereum codebase with
 - **Network Name**: Splendor RPC
 - **RPC URL**: https://splendor-rpc.org/
 - **Chain ID**: 2691 (0xA83)
-- **Currency Symbol**: SPL
+- **Currency Symbol**: SPLD
 - **Block Explorer**: https://splendor-rpc.org/
 
 ## Key Features
@@ -25,10 +25,11 @@ The network implements a unique fee distribution model with **no token burning**
 - **Creator**: 10% of gas fees (protocol development fund)
 
 ### System Contracts
-- **Validators Contract**: Manages validator registration, staking, and rewards
-- **Slashing Contract**: Handles validator penalties and slashing conditions
+- **Validators Contract** (0xF000): Core validator registration, staking, and rewards
+- **Punish Contract** (0xF001): Handles validator penalties and slashing conditions  
+- **Proposal Contract** (0xF002): Governance and proposal voting system
 - **Params Contract**: Network parameter management
-- **Proposal Contract**: Governance and proposal system
+- **ValidatorHelper Contract**: Enhanced validator rewards and tier-based staking system
 
 ## Architecture
 
@@ -38,7 +39,7 @@ The network implements a unique fee distribution model with **no token burning**
 3. **Congress Consensus**: Custom consensus engine for validator coordination
 
 ### Network Parameters
-- **Gas Limit**: 30,000,000 per block
+- **Gas Limit**: 2,000,000,000,000,000 per block (0x1C9C38000000000)
 - **Gas Price**: Dynamic pricing based on network congestion
 - **Validator Requirements**: Minimum stake and performance criteria
 - **Slashing Conditions**: Automated penalties for malicious behavior

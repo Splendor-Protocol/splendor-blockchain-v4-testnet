@@ -94,7 +94,7 @@ Connect again to your server after reboot
 ```
 After you run node-setup, follow the on-screen instructions carefully and you'll get confirmation that the node was successfully installed on your system.
 
-**Note regarding your validator account -** While in the setup process, you'll be asked to create a new account that must be used for block mining and receiving gas rewards. You must import this account to your metamask or any preferred wallet. 
+**Note regarding your validator account -** While in the setup process, you'll be asked to create a new account that must be used for block mining and receiving gas rewards. You must import this account to your metamask or any preferred wallet and fund it with the minimum required SPLD tokens for your chosen validator tier.
  
     
 ## Usage/Examples
