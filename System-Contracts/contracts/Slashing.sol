@@ -26,11 +26,11 @@ contract Slashing is Params {
     
     Validators validators;
     
-    // Slashing parameters
-    uint256 public doubleSignSlashAmount = 1000000 * 1e18; // 1M tokens
+    // Slashing parameters - FIXED: Reasonable amounts based on validator tiers
+    uint256 public doubleSignSlashAmount = 400 * 1e18; // 400 tokens (10% of Bronze minimum)
     uint256 public doubleSignJailTime = 86400; // 24 hours in blocks (1 block = 1 second)
     uint256 public evidenceValidityPeriod = 86400; // Evidence valid for 24 hours
-    uint256 public maxSlashingPercentage = 50; // Max 50% of stake can be slashed
+    uint256 public maxSlashingPercentage = 20; // Max 20% of stake can be slashed (reduced from 50%)
     
     // Storage
     mapping(address => SlashingRecord) public slashingRecords;
@@ -313,16 +313,23 @@ contract Slashing is Params {
     }
     
     /**
-     * @dev Emergency function to unjail a validator (owner only)
+     * @dev Unjail a validator - can only be called by Proposal contract after validator voting
      */
-    function emergencyUnjail(address validator) external onlyOwner {
+    function unjailValidator(address validator) external onlyProposalContract {
+        require(jailedUntil[validator] > 0, "Validator is not jailed");
         jailedUntil[validator] = 0;
+        
+        // Clear slashing status to allow validator to participate again
+        slashingRecords[validator].isSlashed = false;
+        
+        emit ValidatorJailed(validator, 0); // Emit with 0 to indicate unjailed
     }
     
     /**
-     * @dev Emergency function to clear slashing record (owner only)
+     * @dev Emergency function to clear slashing record (owner only) - for extreme cases
      */
     function emergencyClearSlashing(address validator) external onlyOwner {
         slashingRecords[validator] = SlashingRecord(0, 0, 0, false);
+        jailedUntil[validator] = 0;
     }
 }

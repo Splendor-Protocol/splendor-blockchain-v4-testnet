@@ -4,6 +4,11 @@ pragma solidity 0.8.17;
 import "./Params.sol";
 import "./Validators.sol";
 
+interface ISlashing {
+    function unjailValidator(address validator) external;
+    function isJailed(address validator) external view returns (bool);
+}
+
 contract Proposal is Params {
     // How long a proposal will exist
     uint256 public proposalLastingPeriod;
@@ -41,6 +46,7 @@ contract Proposal is Params {
     mapping(address => mapping(bytes32 => VoteInfo)) public votes;
 
     Validators validators;
+    ISlashing slashing;
 
     event LogCreateProposal(
         bytes32 indexed id,
@@ -65,6 +71,7 @@ contract Proposal is Params {
         uint256 time
     );
     event LogSetUnpassed(address indexed val, uint256 time);
+    event LogUnjailValidator(address indexed validator, uint256 time);
 
     modifier onlyValidator() {
         require(validators.isActiveValidator(msg.sender), "Validator only");
@@ -74,6 +81,7 @@ contract Proposal is Params {
     function initialize(address[] calldata vals) external onlyNotInitialized {
         proposalLastingPeriod = 7 days;
         validators = Validators(ValidatorContractAddr);
+        slashing = ISlashing(SlashingContractAddr);
 
         for (uint256 i = 0; i < vals.length; i++) {
             require(vals[i] != address(0), "Invalid validator address");
@@ -149,6 +157,13 @@ contract Proposal is Params {
 
             // try to reactive validator if it isn't the first time
             validators.tryReactive(proposals[id].dst);
+            
+            // If validator is jailed, unjail them through voting
+            if (slashing.isJailed(proposals[id].dst)) {
+                slashing.unjailValidator(proposals[id].dst);
+                emit LogUnjailValidator(proposals[id].dst, block.timestamp);
+            }
+            
             lastProposalActive[proposals[id].dst] = false;
             emit LogPassProposal(id, proposals[id].dst, block.timestamp);
 
