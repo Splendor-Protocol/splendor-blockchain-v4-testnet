@@ -12,8 +12,8 @@
     "istanbulBlock": 0,
     "muirGlacierBlock": 0,
     "congress": { 
-      "period": 3,  
-      "epoch": 100
+      "period": 1,  
+      "epoch": 200
     }
   },
   "nonce": "0x0FD9",
