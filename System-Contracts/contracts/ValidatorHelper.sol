@@ -716,7 +716,7 @@ contract ValidatorHelper is Ownable {
     }
 
 
-    function validatorSpecificInfo1(address validatorAddress, address user) external view returns(string memory identityName, string memory website, string memory otherDetails, uint256 withdrawableRewards, uint256 stakedCoins, uint256 waitingBlocksForUnstake ){
+    function validatorSpecificInfo1(address validatorAddress, address /* user */) external view returns(string memory identityName, string memory website, string memory otherDetails, uint256 withdrawableRewards, uint256 stakedCoins, uint256 waitingBlocksForUnstake ){
         
         string memory moniker = valContract.getValidatorDescription(validatorAddress);
         
@@ -747,14 +747,14 @@ contract ValidatorHelper is Ownable {
         return totalProfitWithdrawn[validator] + viewValidatorRewards(validator);
     }
     
-    function waitingWithdrawProfit(address user, address validatorAddress) external view returns(uint256){
+    function waitingWithdrawProfit(address /* user */, address /* validatorAddress */) external pure returns(uint256){
         // no waiting to withdraw profit.
         // this is kept for backward UI compatibility
         
        return 0;
     }
 
-    function waitingUnstaking(address user, address validator) external view returns(uint256){
+    function waitingUnstaking(address /* user */, address /* validator */) external pure returns(uint256){
         
         //this function is kept as it is for the UI compatibility
         //no waiting for unstaking
@@ -787,7 +787,7 @@ contract ValidatorHelper is Ownable {
         return (valContract.MinimalStakingCoin(), waitingWithdrawStaking(user, validatorAddress));
     }
     
-    function checkValidator(address user) external view returns(bool){
+    function checkValidator(address /* user */) external pure returns(bool){
         //this function is for UI compatibility
         return true;
     }
