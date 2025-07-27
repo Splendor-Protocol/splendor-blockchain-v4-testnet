@@ -15,13 +15,27 @@ We acknowledge and actively contribute to decentralization causes and derivative
 
 ## System Requirements
 
+### Validator Nodes
 **Operating System:** Ubuntu >= 20.04 LTS
 
-**RAM:** 8GB minimum, 32GB recommended
+**CPU:** 4 cores minimum (Intel/AMD x64)
 
-**Persistent Storage:** 25GB minimum, 100GB high-speed SSD recommended
+**RAM:** 8GB minimum
 
-**Note regarding use of GPUs -** GPUs are primarily used in POW consensus chains. Being a DPos Splendor chain has not only more TPS and fast block production but also doesn't need a GPU altogether for its purpose.
+**Persistent Storage:** 100GB high-speed SSD
+
+**Network:** Stable internet connection with low latency
+
+### RPC Nodes  
+**Operating System:** Ubuntu >= 20.04 LTS
+
+**CPU:** 8 cores minimum (Intel/AMD x64)
+
+**RAM:** 16GB minimum
+
+**Persistent Storage:** 200GB high-speed SSD
+
+**Network:** High-bandwidth internet connection for serving requests
 
 
 

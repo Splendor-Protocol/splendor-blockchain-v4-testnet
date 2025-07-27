@@ -51,6 +51,22 @@ The network implements a unique fee distribution model with **no token burning**
 - Node.js 14+ and npm
 - Git
 
+### System Requirements
+
+#### Validator Nodes
+- **OS**: Ubuntu >= 20.04 LTS
+- **CPU**: 4 cores minimum (Intel/AMD x64)
+- **RAM**: 8GB minimum
+- **Storage**: 100GB high-speed SSD
+- **Network**: Stable internet with low latency
+
+#### RPC Nodes
+- **OS**: Ubuntu >= 20.04 LTS  
+- **CPU**: 8 cores minimum (Intel/AMD x64)
+- **RAM**: 16GB minimum
+- **Storage**: 200GB high-speed SSD
+- **Network**: High-bandwidth internet connection
+
 ### Building the Node
 
 ```bash
