@@ -212,13 +212,13 @@ This project is licensed under the GNU Lesser General Public License v3.0 - see 
 
 ### Mainnet
 - **Network Name**: Splendor RPC
-- **Chain ID**: TBD
+- **Chain ID**: 2691
 - **RPC URL**: https://splendor-rpc.org/
 - **Explorer**: TBD
 
 ### Testnet
 - **Network Name**: Splendor Testnet
-- **Chain ID**: TBD
+- **Chain ID**: 256
 - **RPC URL**: https://testnet.splendor-rpc.org/
 - **Faucet**: TBD
 
