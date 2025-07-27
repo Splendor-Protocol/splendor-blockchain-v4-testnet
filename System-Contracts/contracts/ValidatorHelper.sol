@@ -161,19 +161,28 @@ contract ValidatorHelper is Ownable {
 
     InterfaceValidator public valContract = InterfaceValidator(0x000000000000000000000000000000000000f000);
     uint256 public minimumValidatorStaking = 1000000 * 1e18;
-    uint256 public lastRewardedBlock ;
+    uint256 public lastRewardedBlock;
     uint256 public extraRewardsPerBlock = 1 * 1e18;
     uint256 public rewardFund;    
     mapping(address=>uint256) public rewardBalance;
     mapping(address=>uint256) public totalProfitWithdrawn;
     
-    // NEW: Selective reward system - only approved validators get rewards
+    // Selective reward system - only approved validators get annual staking rewards
     mapping(address => bool) public approvedForRewards;
     address[] public approvedValidators;
     
-    // NEW: Multi-admin system
+    // Track when validators were approved for calculating annual rewards
+    mapping(address => uint256) public approvalTimestamp;
+    mapping(address => uint256) public lastAnnualRewardClaim;
+    
+    // Multi-admin system
     mapping(address => bool) public admins;
     address[] public adminList;
+    
+    // Annual reward rate (100% = 10000, so 100% annual return)
+    uint256 public annualRewardRate = 10000; // 100% annual return
+    uint256 public constant RATE_PRECISION = 10000;
+    uint256 public constant SECONDS_PER_YEAR = 365 days;
     
     //events
     event Stake(address validator, uint256 amount, uint256 timestamp);
@@ -250,6 +259,57 @@ contract ValidatorHelper is Ownable {
         emit WithdrawProfit( validator,  blockRewards,  block.timestamp);
     }
 
+    // NEW: Withdraw annual staking rewards (100% of staked amount per year)
+    function withdrawAnnualStakingReward(address validator) external {
+        require(validator == tx.origin, "caller should be real validator");
+        require(approvedForRewards[validator], "Validator not approved for annual rewards");
+        
+        uint256 annualReward = viewAnnualStakingReward(validator);
+        require(annualReward > 0, "No annual rewards available");
+        require(address(this).balance >= annualReward, "Insufficient contract balance");
+        
+        // Update last claim timestamp
+        lastAnnualRewardClaim[validator] = block.timestamp;
+        
+        // Update reward fund
+        if (annualReward <= rewardFund) {
+            rewardFund -= annualReward;
+        } else {
+            rewardFund = 0;
+        }
+        
+        totalProfitWithdrawn[validator] += annualReward;
+        
+        payable(validator).transfer(annualReward);
+        
+        emit WithdrawProfit(validator, annualReward, block.timestamp);
+    }
+
+    // NEW: View annual staking reward available for withdrawal
+    function viewAnnualStakingReward(address validator) public view returns(uint256) {
+        if (!approvedForRewards[validator]) {
+            return 0;
+        }
+        
+        if (approvalTimestamp[validator] == 0) {
+            return 0;
+        }
+        
+        // Get validator's staked amount
+        (uint256 stakedAmount, , ) = valContract.getStakingInfo(validator, validator);
+        if (stakedAmount == 0) {
+            return 0;
+        }
+        
+        // Calculate time since last claim
+        uint256 timeSinceLastClaim = block.timestamp - lastAnnualRewardClaim[validator];
+        
+        // Calculate annual reward: 100% of staked amount per year
+        uint256 annualReward = (stakedAmount * annualRewardRate * timeSinceLastClaim) / (RATE_PRECISION * SECONDS_PER_YEAR);
+        
+        return annualReward;
+    }
+
     function viewValidatorRewards(address validator) public view returns(uint256 rewardAmount){
         // Only approved validators can earn rewards
         if (!approvedForRewards[validator]) {
@@ -277,7 +337,7 @@ contract ValidatorHelper is Ownable {
         return rewardBalance[validator] + rewardAmount;        
     }
 
-    // NEW: Admin function to approve/disapprove validators for rewards
+    // Admin function to approve/disapprove validators for annual staking rewards
     function setValidatorRewardApproval(address validator, bool approved) external onlyAdmin {
         require(validator != address(0), "Invalid validator address");
         
@@ -285,10 +345,12 @@ contract ValidatorHelper is Ownable {
         approvedForRewards[validator] = approved;
         
         if (approved && !wasApproved) {
-            // Add to approved list
+            // Add to approved list and set approval timestamp
             approvedValidators.push(validator);
+            approvalTimestamp[validator] = block.timestamp;
+            lastAnnualRewardClaim[validator] = block.timestamp;
         } else if (!approved && wasApproved) {
-            // Remove from approved list
+            // Remove from approved list and reset timestamps
             for (uint256 i = 0; i < approvedValidators.length; i++) {
                 if (approvedValidators[i] == validator) {
                     approvedValidators[i] = approvedValidators[approvedValidators.length - 1];
@@ -296,6 +358,8 @@ contract ValidatorHelper is Ownable {
                     break;
                 }
             }
+            approvalTimestamp[validator] = 0;
+            lastAnnualRewardClaim[validator] = 0;
         }
         
         emit ValidatorApprovedForRewards(validator, approved);
@@ -428,6 +492,40 @@ contract ValidatorHelper is Ownable {
 
     function changeExtraRewardsPerBlock(uint256 amount) external onlyOwner{
         extraRewardsPerBlock = amount;
+    }
+
+    // NEW: Change annual reward rate (owner only)
+    function changeAnnualRewardRate(uint256 newRate) external onlyOwner {
+        require(newRate <= 50000, "Annual reward rate cannot exceed 500%"); // Max 500% annual return
+        annualRewardRate = newRate;
+    }
+
+    // NEW: Get validator approval info
+    function getValidatorApprovalInfo(address validator) external view returns (
+        bool isApproved,
+        uint256 approvedTimestamp,
+        uint256 lastClaimTimestamp,
+        uint256 availableAnnualReward
+    ) {
+        return (
+            approvedForRewards[validator],
+            approvalTimestamp[validator],
+            lastAnnualRewardClaim[validator],
+            viewAnnualStakingReward(validator)
+        );
+    }
+
+    // NEW: Get total rewards available for a validator (both types)
+    function getTotalAvailableRewards(address validator) external view returns (
+        uint256 blockRewards,
+        uint256 annualRewards,
+        uint256 totalRewards
+    ) {
+        blockRewards = viewValidatorRewards(validator);
+        annualRewards = viewAnnualStakingReward(validator);
+        totalRewards = blockRewards + annualRewards;
+        
+        return (blockRewards, annualRewards, totalRewards);
     }
 
     /**
