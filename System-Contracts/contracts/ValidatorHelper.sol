@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.19;
+pragma solidity 0.8.17;
 
 
 
@@ -18,14 +18,10 @@ interface InterfaceValidator {
     }
     struct Description {
         string moniker;
-        string identity;
-        string website;
-        string email;
-        string details;
     }
     function getTopValidators() external view returns(address[] memory);
     function getValidatorInfo(address val)external view returns(address payable, Status, uint256, uint256, uint256, address[] memory);
-    function getValidatorDescription(address val) external view returns ( string memory,string memory,string memory,string memory,string memory);
+    function getValidatorDescription(address val) external view returns (string memory);
     function totalStake() external view returns(uint256);
     function getStakingInfo(address staker, address validator) external view returns(uint256, uint256, uint256);
     function viewStakeReward(address _staker, address _validator) external view returns(uint256);
@@ -39,11 +35,7 @@ interface InterfaceValidator {
     //write functions
     function createOrEditValidator(
         address payable feeAddr,
-        string calldata moniker,
-        string calldata identity,
-        string calldata website,
-        string calldata email,
-        string calldata details
+        string calldata moniker
     ) external payable  returns (bool);
 
     function unstake(address validator)
@@ -257,16 +249,12 @@ contract ValidatorHelper is Ownable {
 
     function createOrEditValidator(
         address payable feeAddr,
-        string calldata moniker,
-        string calldata identity,
-        string calldata website,
-        string calldata email,
-        string calldata details
+        string calldata moniker
     ) external payable  returns (bool) {
 
         require(msg.value >= minimumValidatorStaking, "Please stake minimum validator staking" );
 
-        valContract.createOrEditValidator{value: msg.value}(feeAddr, moniker, identity, website, email, details);
+        valContract.createOrEditValidator{value: msg.value}(feeAddr, moniker);
 
         emit Stake(msg.sender, msg.value, block.timestamp);
 
@@ -436,8 +424,8 @@ contract ValidatorHelper is Ownable {
         return rewardBalance[validator] + rewardAmount;        
     }
 
-    // Admin function to approve/disapprove validators for annual staking rewards
-    function setValidatorRewardApproval(address validator, bool approved) external onlyAdmin {
+    // Internal function to approve/disapprove validators for annual staking rewards
+    function _setValidatorRewardApproval(address validator, bool approved) internal {
         require(validator != address(0), "Invalid validator address");
         
         bool wasApproved = approvedForRewards[validator];
@@ -464,10 +452,15 @@ contract ValidatorHelper is Ownable {
         emit ValidatorApprovedForRewards(validator, approved);
     }
 
+    // Admin function to approve/disapprove validators for annual staking rewards
+    function setValidatorRewardApproval(address validator, bool approved) external onlyAdmin {
+        _setValidatorRewardApproval(validator, approved);
+    }
+
     // NEW: Admin function to approve multiple validators at once
     function setMultipleValidatorRewardApproval(address[] calldata validators, bool approved) external onlyAdmin {
         for (uint256 i = 0; i < validators.length; i++) {
-            setValidatorRewardApproval(validators[i], approved);
+            _setValidatorRewardApproval(validators[i], approved);
         }
     }
 
@@ -707,12 +700,12 @@ contract ValidatorHelper is Ownable {
         for(uint8 i=0; i < totalValidators; i++){
             (, InterfaceValidator.Status status, uint256 coins, , , ) = valContract.getValidatorInfo(highestValidatorsSet[i]);
 	        if(coins>0 ){
-                (, string memory identity, string memory website, ,) = valContract.getValidatorDescription(highestValidatorsSet[i]);
+                string memory moniker = valContract.getValidatorDescription(highestValidatorsSet[i]);
                 
                 statusArray[i] = status;
                 coinsArray[i] = coins;
-                identityArray[i] = identity;
-                websiteArray[i] = website;
+                identityArray[i] = moniker;
+                websiteArray[i] = ""; // No website field anymore
  	        }
             else
             {
@@ -725,7 +718,7 @@ contract ValidatorHelper is Ownable {
 
     function validatorSpecificInfo1(address validatorAddress, address user) external view returns(string memory identityName, string memory website, string memory otherDetails, uint256 withdrawableRewards, uint256 stakedCoins, uint256 waitingBlocksForUnstake ){
         
-        (, string memory identity, string memory websiteLocal, ,string memory details) = valContract.getValidatorDescription(validatorAddress);
+        string memory moniker = valContract.getValidatorDescription(validatorAddress);
         
         uint256 unstakeBlock;
 
@@ -736,7 +729,7 @@ contract ValidatorHelper is Ownable {
             stakedCoins = 0;
         }        
 
-        return(identity, websiteLocal, details, viewValidatorRewards(validatorAddress), stakedCoins, waitingBlocksForUnstake) ;
+        return(moniker, "", "", viewValidatorRewards(validatorAddress), stakedCoins, waitingBlocksForUnstake) ;
     }
 
 
