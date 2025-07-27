@@ -6,16 +6,16 @@ A high-performance blockchain network built on a modified Ethereum codebase with
 
 - **Network Name**: Splendor RPC
 - **RPC URL**: https://splendor-rpc.org/
-- **Chain ID**: 5758 (0x167E)
+- **Chain ID**: 2691 (0xA83)
 - **Currency Symbol**: SPL
 - **Block Explorer**: https://splendor-rpc.org/
 
 ## Key Features
 
 ### Consensus Mechanism
-- **Congress Consensus**: A Proof-of-Authority (PoA) based consensus mechanism
+- **Congress Consensus**: A Delegated Proof-of-Stake (DPoS) based consensus mechanism
 - **Validator Management**: Dynamic validator set with staking and slashing mechanisms
-- **Block Time**: ~3 seconds average block time
+- **Block Time**: ~1 second average block time
 - **Finality**: Fast finality with validator signatures
 
 ### Fee Distribution
