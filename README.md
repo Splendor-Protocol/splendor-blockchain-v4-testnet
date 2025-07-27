@@ -118,10 +118,10 @@ function submitDoubleSignEvidence(
 ## 📊 Network Statistics
 
 ### Consensus Parameters
-- **Block Time**: 3 seconds
+- **Block Time**: 1 second
 - **Epoch Length**: 200 blocks
-- **Validator Set Size**: 21 active validators
-- **Minimum Stake**: 32 ETH equivalent
+- **Validator Set Size**: Up to 10,000 active validators
+- **Minimum Stake**: 3,947 SPLD (Bronze Tier)
 
 ### Economic Parameters
 - **Base Slashing**: 1,000,000 tokens

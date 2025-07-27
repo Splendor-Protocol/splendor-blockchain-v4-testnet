@@ -59,13 +59,13 @@ To back the Splendor RPC blockchain you can become a validator. Full flow to bec
 * Install this package **([See Installation](#installation))**
 * Download your newly created validator wallet from your server and import it into your metamask or preferred wallet. Fund this account with the appropriate SPLD tokens needed to become a validator (minimum 3,947 SPLD for Bronze tier). Example command to download the wallet on your local PC. Only works for UNIX-based OSes or on any environment that can run the OpenSSH package:
 ```bash
-  scp -r root@<server_ip>:/root/Core-Blockchain/chaindata/node1/keystore
-  scp root@<server_ip>:/root/Core-Blockchain/chaindata/node1/pass.txt
+  scp -r root@<server_ip>:/root/splendor-blockchain-v4/Core-Blockchain/chaindata/node1/keystore
+  scp root@<server_ip>:/root/splendor-blockchain-v4/Core-Blockchain/chaindata/node1/pass.txt
 ```
 * On your server, start the node that you just installed **([See Usage/Example](#usageexamples))**
 * Once the node is started and confirmation is seen on your terminal, open the interactive console by attaching tmux session **([See Usage/Example](#usageexamples))**
 * Once inside the interactive console, you'll see "IMPORTED TRANSACTION OBJECTS" and "age=<some period like 6d5hr or 5mon 3weeks>". You need to wait until the "unauthorized validator" warning starts to pop up on the console. 
-* Once "unauthorized validators" warning shows up, go to https://staking.splendor-rpc.org/ and click "Become a validator". Fill in your validator name (moniker) and fee address field with the validator wallet address that you imported into your metamask. Proceed further
+* Once "unauthorized validators" warning shows up, go to https://splendor-rpc.org/ and click "Become a validator". Fill in your validator name (moniker) and fee address field with the validator wallet address that you imported into your metamask. Proceed further
 * Once the last step is done, you'll see a "🔨 mined potential block" message on the interactive console. You'll also see your validator wallet as a validator on the staking page and on explorer. You should also detach from the console after the whole process is done **([See Usage/Example](#usageexamples))**
 ## Installation
 
@@ -88,9 +88,9 @@ Skip the above commands if you have already updated the system and installed the
 Connect again to your server after reboot
 ```bash
   sudo -i
-  git clone https://github.com/MNZChain/Core-Blockchain.git
-  cd core-blockchain
-  ./node-setup --validator 1
+  git clone https://github.com/Splendor-Protocol/splendor-blockchain-v4.git
+  cd splendor-blockchain-v4/Core-Blockchain
+  ./node-setup.sh --validator 1
 ```
 After you run node-setup, follow the on-screen instructions carefully and you'll get confirmation that the node was successfully installed on your system.
 
