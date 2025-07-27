@@ -124,10 +124,10 @@ function submitDoubleSignEvidence(
 - **Minimum Stake**: 3,947 SPLD (Bronze Tier)
 
 ### Economic Parameters
-- **Base Slashing**: 1,000,000 tokens
-- **Percentage Slashing**: 1-50% of stake
-- **Jail Duration**: 24 hours
-- **Unjail Fee**: 100,000 tokens
+- **Base Slashing**: 1,000,000 SPLD tokens
+- **Percentage Slashing**: Up to 50% of stake
+- **Jail Duration**: 86,400 blocks (24 hours)
+- **Unjail Process**: Emergency unjail by contract owner only
 
 ## 🚀 Deployment
 
