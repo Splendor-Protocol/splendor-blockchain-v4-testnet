@@ -28,44 +28,40 @@ The network implements a unique **no token burning** fee distribution model:
 ### 🏆 Tiered Validator System
 Our innovative validator system ensures fair participation and network security:
 
-#### Validator Tiers & Pricing
-- **Tier 1 - Basic Validator**: Starting at **$0.38 USD** (38 cents)
-- **Tier 2 - Standard Validator**: Enhanced rewards and voting power
-- **Tier 3 - Premium Validator**: Maximum rewards and governance influence
-- **Tier 4 - Elite Validator**: Top-tier performance and network privileges
+#### Validator Tiers & Requirements
+- **Bronze Validator**: 3,947 SPLD (~$1,500 USD equivalent)
+- **Silver Validator**: 39,474 SPLD (~$15,000 USD equivalent)  
+- **Gold Validator**: 394,737 SPLD (~$150,000 USD equivalent)
 
 #### Validator Requirements
-- **Minimum Stake**: Dynamic based on tier selection
+- **Minimum Stake**: 32 SPLD (minimum staking requirement)
+- **Bronze Tier Minimum**: 3,947 SPLD (entry-level validator)
 - **Performance Threshold**: 99.9% uptime requirement
-- **Security Deposit**: Slashing protection mechanism
-- **Community Score**: Reputation-based ranking system
+- **Staking Lock Period**: 86,400 blocks (~24 hours)
+- **Maximum Validators**: 10,000 network-wide
 
 ### 🏛️ Advanced System Contracts
 
 #### Core System Contracts
-- **Validators Contract** (0xF000000000000000000000000000000000000000)
+- **Validators Contract** (0x000000000000000000000000000000000000f000)
   - Validator registration and management
   - Staking and unstaking mechanisms
   - Performance tracking and rewards distribution
   
-- **Punish Contract** (0xF000000000000000000000000000000000000001)
+- **Punish Contract** (0x000000000000000000000000000000000000F001)
   - Automated slashing conditions
   - Penalty enforcement
   - Blacklist management
   
-- **Proposal Contract** (0xF000000000000000000000000000000000000002)
+- **Proposal Contract** (0x000000000000000000000000000000000000F002)
   - On-chain governance system
   - Community proposals and voting
   - Parameter updates and network upgrades
-  
-- **Params Contract** (0xF000000000000000000000000000000000000003)
-  - Dynamic network parameter management
-  - Real-time adjustments based on network conditions
-  
-- **ValidatorHelper Contract** (0xF000000000000000000000000000000000000004)
-  - Enhanced validator rewards calculation
-  - Tier-based staking system
-  - Performance bonuses and penalties
+
+- **Slashing Contract** (0x000000000000000000000000000000000000F003)
+  - Double-sign detection and penalties
+  - Validator jailing mechanisms
+  - Evidence processing and validation
 
 ## 🚀 Getting Started
 
@@ -139,25 +135,26 @@ cd Core-Blockchain
 #### Genesis Configuration
 - **Chain ID**: 2691 (0xA83) - Splendor mainnet
 - **Network ID**: 2691
-- **Initial Supply**: 100,000,000 SPLD
-- **Block Gas Limit**: **2,000,000,000,000,000** (2 quadrillion wei)
-- **Gas Price**: Dynamic (0.000000001 SPLD base)
+- **Initial Supply**: 26,000,000,000 SPLD (26 billion)
+- **Block Gas Limit**: **300,000,000** (0x11E1A300 in hex, ~300 million gas)
+- **Gas Price**: Dynamic (base fee adjusts based on network congestion)
 
 #### Network Parameters
 - **Consensus**: Congress (enhanced DPoS)
 - **Block Time**: ~1 second
 - **Finality**: Instant (2/3 validator signatures)
-- **Validator Set Size**: 21 active validators
-- **Rotation Period**: Every 24 hours
-- **Slashing Threshold**: 5% downtime tolerance
+- **Validator Set Size**: Up to 10,000 validators (dynamic scaling)
+- **Epoch Length**: 200 blocks (~3.3 minutes)
+- **Validator Rotation**: Every epoch (200 blocks)
+- **Slashing Parameters**: 400 SPLD for double-signing, 24-hour jail time
 
 ## 🎯 Validator Participation Guide
 
 ### How to Become a Validator
 
 1. **Acquire SPLD Tokens**: Purchase SPLD from supported exchanges
-2. **Choose Your Tier**: Select from Basic ($0.38) to Elite tiers
-3. **Stake Your Tokens**: Lock tokens in the Validators contract
+2. **Choose Your Tier**: Select from Bronze (3,947 SPLD), Silver (39,474 SPLD), or Gold (394,737 SPLD)
+3. **Stake Your Tokens**: Lock tokens in the Validators contract (0x000000000000000000000000000000000000f000)
 4. **Run Your Node**: Set up and maintain validator infrastructure
 5. **Join Consensus**: Start validating blocks and earning rewards
 
@@ -223,7 +220,7 @@ go test ./... -bench=. -benchmem
 
 ### Economic Indicators
 - **Market Cap**: [To be updated after mainnet launch]
-- **Circulating Supply**: 100,000,000 SPLD (initial)
+- **Circulating Supply**: 26,000,000,000 SPLD (26 billion)
 - **Staking APR**: [To be determined by network participation]
 - **Validator ROI**: [To be determined by network activity]
 
@@ -264,83 +261,10 @@ go test ./... -bench=. -benchmem
 - **Malicious Behavior**: Up to 100% stake slashing
 - **Unavailability**: Temporary jailing mechanism
 
-## 🤝 Contributing
-
-### Development Guidelines
-1. **Fork the repository** on GitHub
-2. **Create feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit changes**: `git commit -m 'Add amazing feature'`
-4. **Push to branch**: `git push origin feature/amazing-feature`
-5. **Open Pull Request** with detailed description
-
-### Code Standards
-- **Go**: Follow standard Go formatting and linting
-- **Solidity**: Use OpenZeppelin contracts and best practices
-- **Testing**: Maintain >90% test coverage
-- **Documentation**: Update docs for all changes
-
-### Community Contributions
-- **Bug Reports**: Use GitHub issues with detailed reproduction steps
-- **Feature Requests**: Create enhancement proposals
-- **Documentation**: Help improve guides and tutorials
-- **Translations**: Contribute to multi-language support
 
 ## 📄 License
 
 This project is licensed under the **GNU General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support & Resources
-
-### Technical Support
-- **GitHub Issues**: [Report bugs and issues](https://github.com/Splendor-Protocol/splendor-blockchain-v4/issues)
-- **Documentation**: [Comprehensive docs](https://docs.splendor-rpc.org/)
-- **API Reference**: [Developer API docs](https://api.splendor-rpc.org/docs)
-
-### Community Channels
-- **Discord**: [Join our community](https://discord.gg/splendor)
-- **Telegram**: [Official announcements](https://t.me/splendor_protocol)
-- **Twitter**: [Follow updates](https://twitter.com/splendor_chain)
-- **Reddit**: [Community discussions](https://reddit.com/r/splendor_protocol)
-
-### Developer Resources
-- **Testnet Faucet**: [Get test SPLD](https://faucet.splendor-rpc.org/)
-- **Block Explorer**: [View transactions](https://splendor-rpc.org/)
-- **SDK Libraries**: [JavaScript, Python, Go](https://github.com/Splendor-Protocol/sdk)
-- **Smart Contract Examples**: [Sample contracts](https://github.com/Splendor-Protocol/examples)
-
-## 🗺️ Roadmap
-
-### Phase 1 - Foundation ✅ (Completed Q2 2025)
-- ✅ Core blockchain implementation
-- ✅ Congress consensus mechanism
-- ✅ System contracts deployment
-- ✅ Fee distribution system
-- ✅ Basic validator functionality
-- ✅ Mainnet launch
-
-### Phase 2 - Enhancement 🚧 (Q3-Q4 2025)
-- 🔄 Tiered validator system (current)
-- 🔄 Enhanced governance features
-- 🔄 Mobile wallet applications
-- 🔄 Developer tooling improvements
-- 🔄 Cross-chain bridge design
-- 🔄 DeFi protocol integrations
-
-### Phase 3 - Expansion 📅 (2026)
-- 📅 Cross-chain bridge implementation
-- 📅 Layer 2 scaling solutions
-- 📅 Advanced DeFi ecosystem
-- 📅 Enterprise partnerships
-- 📅 Global validator network (100+ validators)
-- 📅 Decentralized exchange (DEX)
-
-### Phase 4 - Ecosystem 🌟 (2027+)
-- 🌟 Full DeFi ecosystem
-- 🌟 NFT marketplace
-- 🌟 Gaming integrations
-- 🌟 Enterprise solutions
-- 🌟 Global adoption initiatives
-- 🌟 DAO governance transition
 
 ---
 
