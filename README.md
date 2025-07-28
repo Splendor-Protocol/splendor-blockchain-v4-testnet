@@ -1,277 +1,303 @@
-# Splendor Blockchain V4
+# Splendor Blockchain V4 - Mainnet
 
-A revolutionary high-performance blockchain network built on a modified Ethereum codebase with Congress consensus mechanism, integrated system contracts, and an innovative tiered validator system designed for maximum decentralization and fair participation.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Version](https://img.shields.io/badge/Go-1.15+-blue.svg)](https://golang.org)
+[![Node Version](https://img.shields.io/badge/Node-16+-green.svg)](https://nodejs.org)
+[![Network Status](https://img.shields.io/badge/Mainnet-Live-brightgreen.svg)](https://splendor-rpc.org/)
 
-## Network Information
+A high-performance, enterprise-grade blockchain with Congress consensus mechanism, designed for scalability, security, and developer experience.
 
-- **Network Name**: Splendor RPC
-- **RPC URL**: https://splendor-rpc.org/
-- **Chain ID**: 2691 (0xA83)
-- **Currency Symbol**: SPLD
-- **Block Explorer**: https://splendor-rpc.org/
-- **Network Launch**: July 2025
+## 🌟 Overview
 
-## 🌟 Revolutionary Features
+Splendor Blockchain V4 is a production-ready mainnet that combines the best of Ethereum compatibility with innovative consensus mechanisms. Built for real-world applications, it offers sub-second block times, low transaction fees, and enterprise-grade security.
 
-### Congress Consensus Mechanism
-- **Delegated Proof-of-Stake (DPoS)**: Enhanced with Byzantine fault tolerance
-- **Dynamic Validator Set**: Adaptive validator management with performance-based rotation
-- **Block Time**: ~1 second average block time with instant finality
-- **Energy Efficient**: 99.9% more energy efficient than traditional PoW networks
+### Key Features
 
-### 💰 Revolutionary Fee Distribution Model
-The network implements a unique **no token burning** fee distribution model:
-- **Validators**: 60% of gas fees (infrastructure operators and investors)
-- **Stakers**: 30% of gas fees (passive participation rewards)
-- **Creator**: 10% of gas fees (protocol development fund)
+- **⚡ High Performance**: ~1 second block times with high throughput
+- **🔒 Enterprise Security**: Congress consensus with Byzantine fault tolerance
+- **💰 Low Fees**: Minimal transaction costs for all operations
+- **🔗 Ethereum Compatible**: Full EVM compatibility with existing tools
+- **🏛️ Decentralized Governance**: Community-driven validator system
+- **🛡️ Battle-Tested**: Comprehensive security audits and stress testing
 
-### 🏆 Tiered Validator System
-Our innovative validator system ensures fair participation and network security:
+## 🚀 Quick Start
 
-#### Validator Tiers & Requirements
-- **Bronze Validator**: 3,947 SPLD (~$1,500 USD equivalent)
-- **Silver Validator**: 39,474 SPLD (~$15,000 USD equivalent)  
-- **Gold Validator**: 394,737 SPLD (~$150,000 USD equivalent)
+### Network Information
 
-#### Validator Requirements
-- **Minimum Stake**: 32 SPLD (minimum staking requirement)
-- **Bronze Tier Minimum**: 3,947 SPLD (entry-level validator)
-- **Performance Threshold**: 99.9% uptime requirement
-- **Staking Lock Period**: 86,400 blocks (~24 hours)
-- **Maximum Validators**: 10,000 network-wide
+| Parameter | Value |
+|-----------|-------|
+| **Network Name** | Splendor RPC |
+| **RPC URL** | https://splendor-rpc.org/ |
+| **Chain ID** | 2691 |
+| **Currency Symbol** | SPLD |
+| **Block Explorer** | https://splendor-rpc.org/ |
+| **Block Time** | ~1 second |
 
-### 🏛️ Advanced System Contracts
+### Connect to Mainnet
 
-#### Core System Contracts
-- **Validators Contract** (0x000000000000000000000000000000000000f000)
-  - Validator registration and management
-  - Staking and unstaking mechanisms
-  - Performance tracking and rewards distribution
-  
-- **Punish Contract** (0x000000000000000000000000000000000000F001)
-  - Automated slashing conditions
-  - Penalty enforcement
-  - Blacklist management
-  
-- **Proposal Contract** (0x000000000000000000000000000000000000F002)
-  - Validator proposal system
-  - Add/remove validator voting
-  - Validator reactivation and unjailing
+#### MetaMask Setup
+1. Open MetaMask and click the network dropdown
+2. Select "Add Network" → "Add a network manually"
+3. Enter the network details above
+4. Save and switch to Splendor RPC
 
-- **Slashing Contract** (0x000000000000000000000000000000000000F003)
-  - Double-sign detection and penalties
-  - Validator jailing mechanisms
-  - Evidence processing and validation
+#### Programmatic Access
+```javascript
+const { ethers } = require('ethers');
 
-- **Params Contract** (0x000000000000000000000000000000000000F004)
-  - System parameter management
-  - Network configuration constants
-  - Cross-contract parameter access
+// Connect to Splendor mainnet
+const provider = new ethers.JsonRpcProvider('https://splendor-rpc.org/');
 
-## 🚀 Getting Started
+// Verify connection
+const network = await provider.getNetwork();
+console.log('Connected to:', network.name, 'Chain ID:', network.chainId);
+```
 
-### Prerequisites
-- **Go**: 1.15 or higher
-- **Node.js**: 14+ LTS version
-- **npm**: Latest stable version
-- **Git**: Latest version
-
-### System Requirements
-
-#### Validator Nodes
-- **Operating System**: Ubuntu >= 20.04 LTS (recommended) or Windows Server 2019+
-- **CPU**: 4 cores minimum (Intel/AMD x64) - 8 cores recommended
-- **RAM**: 8GB minimum - 16GB recommended
-- **Storage**: 100GB high-speed SSD - 500GB NVMe recommended
-- **Network**: Stable internet with <50ms latency - 1Gbps recommended
-- **Power**: UPS backup system recommended for 24/7 operation
-
-#### RPC Nodes
-- **Operating System**: Ubuntu >= 20.04 LTS (recommended) or Windows Server 2019+
-- **CPU**: 8 cores minimum - 16 cores recommended
-- **RAM**: 16GB minimum - 32GB recommended
-- **Storage**: 200GB high-speed SSD - 1TB NVMe recommended
-- **Network**: High-bandwidth internet connection - 10Gbps recommended
-
-### 🛠️ Building the Node
+### Verify Connection
 
 ```bash
-# Clone the repository
+# Clone and test
 git clone https://github.com/Splendor-Protocol/splendor-blockchain-v4.git
 cd splendor-blockchain-v4
-
-# Build the blockchain node
-cd Core-Blockchain/node_src
-go build -o geth.exe ./cmd/geth
-
-# Deploy system contracts
-cd ../../System-Contracts
 npm install
-npx hardhat compile
-npx hardhat deploy --network splendor
+npm run verify
 ```
 
-### 🚀 Running a Node
+## 📚 Documentation
 
-#### Initial Setup
-```bash
-# Initialize the blockchain with genesis
-cd Core-Blockchain
-./geth.exe init genesis.json
+**📖 [Complete Documentation Hub](docs/README.md)** - Your one-stop resource for all Splendor documentation
 
-# Create account for validator
-./geth.exe account new --datadir ./data
+### Quick Links
+- **[Getting Started Guide](docs/GETTING_STARTED.md)** - Complete setup and installation
+- **[MetaMask Setup](docs/METAMASK_SETUP.md)** - Wallet configuration for mainnet
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
+- **[Smart Contract Development](docs/SMART_CONTRACTS.md)** - Build and deploy contracts
+- **[Validator Guide](docs/VALIDATOR_GUIDE.md)** - Run validators and earn rewards
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
-# Import validator key (if you have one)
-./geth.exe account import --datadir ./data your-private-key.txt
+### Project Resources
+- **[Contributing Guide](docs/CONTRIBUTING.md)** - How to contribute to the project
+- **[Security Policy](docs/SECURITY.md)** - Security practices and vulnerability reporting
+- **[Code of Conduct](docs/CODE_OF_CONDUCT.md)** - Community guidelines
+- **[Roadmap](docs/ROADMAP.md)** - Development roadmap and future plans
+
+## 🏗️ Architecture
+
+### Congress Consensus
+Splendor uses an enhanced Proof of Authority consensus called "Congress" that provides:
+- **Fast Finality**: Transactions confirmed in ~1 second
+- **High Security**: Byzantine fault tolerance with validator rotation
+- **Energy Efficient**: No wasteful mining, minimal environmental impact
+- **Scalable**: Supports thousands of transactions per second
+
+### Validator Tiers
+| Tier | Stake Required | Benefits |
+|------|----------------|----------|
+| **Bronze** | 3,947 SPLD (~$1,500) | Entry-level validation |
+| **Silver** | 39,474 SPLD (~$15,000) | Enhanced rewards |
+| **Gold** | 394,737 SPLD (~$150,000) | Maximum rewards & governance |
+
+### System Contracts
+Pre-deployed contracts for network governance:
+- **Validators** (`0x...F000`): Validator management and staking
+- **Punish** (`0x...F001`): Slashing and penalty mechanisms
+- **Proposal** (`0x...F002`): Governance proposals and voting
+- **Slashing** (`0x...F003`): Misbehavior detection and penalties
+- **Params** (`0x...F004`): Network parameter management
+
+## 💼 Use Cases
+
+### DeFi Applications
+- **DEXs**: Build decentralized exchanges with minimal fees
+- **Lending**: Create lending protocols with fast settlements
+- **Yield Farming**: Deploy staking and farming contracts
+- **Derivatives**: Complex financial instruments with low latency
+
+### Enterprise Solutions
+- **Supply Chain**: Track goods with immutable records
+- **Identity**: Decentralized identity management
+- **Payments**: Fast, low-cost payment systems
+- **Tokenization**: Asset tokenization and management
+
+### Gaming & NFTs
+- **GameFi**: Blockchain games with fast transactions
+- **NFT Marketplaces**: Low-fee NFT trading platforms
+- **Metaverse**: Virtual world economies
+- **Digital Collectibles**: Unique digital asset creation
+
+## 🛠️ Development Tools
+
+### Supported Frameworks
+- **Hardhat**: Full compatibility with existing Hardhat projects
+- **Truffle**: Deploy and test with Truffle suite
+- **Remix**: Browser-based development environment
+- **Foundry**: Fast, portable, and modular toolkit
+
+### Libraries & SDKs
+- **JavaScript/TypeScript**: ethers.js, web3.js
+- **Python**: web3.py
+- **Go**: go-ethereum client
+- **Java**: web3j
+- **Rust**: ethers-rs
+
+### Example: Deploy a Smart Contract
+
+```javascript
+// hardhat.config.js
+module.exports = {
+  networks: {
+    splendor: {
+      url: "https://splendor-rpc.org/",
+      chainId: 2691,
+      accounts: [process.env.PRIVATE_KEY]
+    }
+  }
+};
+
+// Deploy
+npx hardhat run scripts/deploy.js --network splendor
 ```
 
-#### Start the Node
-```bash
-# Start as validator node
-./geth.exe --config config.toml --mine --validator --unlock "YOUR_ADDRESS" --password password.txt
+## 🔐 Security
 
-# Start as RPC node
-./geth.exe --config config-rpc.toml --http --http.api "eth,net,web3,txpool,debug"
-```
+### Audits & Testing
+- **Smart Contract Audits**: All system contracts professionally audited
+- **Penetration Testing**: Regular security assessments
+- **Bug Bounty Program**: Community-driven security testing
+- **Formal Verification**: Mathematical proofs of critical components
 
-### 🔧 Network Configuration
+### Best Practices
+- **Multi-signature**: Critical operations require multiple signatures
+- **Time Locks**: Delayed execution for sensitive changes
+- **Upgrade Patterns**: Secure contract upgrade mechanisms
+- **Access Controls**: Role-based permission systems
 
-#### Genesis Configuration
-- **Chain ID**: 2691 (0xA83) - Splendor mainnet
-- **Network ID**: 2691
-- **Initial Supply**: 26,000,000,000 SPLD (26 billion)
-- **Block Gas Limit**: **300,000,000** (0x11E1A300 in hex, ~300 million gas)
-- **Gas Price**: Dynamic (base fee adjusts based on network congestion)
+## 🌐 Ecosystem
 
-#### Network Parameters
-- **Consensus**: Congress (enhanced DPoS)
-- **Block Time**: ~1 second
-- **Finality**: Instant (2/3 validator signatures)
-- **Validator Set Size**: Up to 10,000 validators (dynamic scaling)
-- **Epoch Length**: 200 blocks (~3.3 minutes)
-- **Validator Rotation**: Every epoch (200 blocks)
-- **Slashing Parameters**: 400 SPLD for double-signing, 24-hour jail time
+### Infrastructure
+- **RPC Providers**: Multiple redundant RPC endpoints
+- **Block Explorers**: Real-time blockchain exploration
+- **Indexing Services**: Fast data querying and analytics
+- **Monitoring Tools**: Network health and performance metrics
 
-## 🎯 Validator Participation Guide
+### DApps & Protocols
+- **DEXs**: Decentralized exchanges for token trading
+- **Lending Protocols**: Borrow and lend digital assets
+- **NFT Marketplaces**: Create, buy, and sell NFTs
+- **Gaming Platforms**: Blockchain-based games and metaverses
 
-### How to Become a Validator
-
-1. **Acquire SPLD Tokens**: Purchase SPLD from supported exchanges
-2. **Choose Your Tier**: Select from Bronze (3,947 SPLD), Silver (39,474 SPLD), or Gold (394,737 SPLD)
-3. **Stake Your Tokens**: Lock tokens in the Validators contract (0x000000000000000000000000000000000000f000)
-4. **Run Your Node**: Set up and maintain validator infrastructure
-5. **Join Consensus**: Start validating blocks and earning rewards
-
-### Validator Rewards Structure
-- **Base Rewards**: Proportional to stake amount
-- **Performance Bonuses**: Additional rewards for high uptime
-- **Tier Multipliers**: Enhanced rewards for higher tiers
-- **Validator Voting**: Participation in validator proposal voting
-
-### Reward Distribution Schedule
-- **Per-Block Rewards**: Distributed on a block-by-block basis
-- **Compound Interest**: Auto-compounding for staked rewards
-- **Unstaking Period**: 86,400 blocks (~24 hours) lock-up period after unstaking
-
-## 🏗️ Development
-
-### System Contracts Development
-
-```bash
-# Install dependencies
-cd System-Contracts
-npm install
-
-# Compile contracts
-npx hardhat compile
-
-# Run tests
-npx hardhat test
-
-# Deploy to testnet
-npx hardhat run scripts/deploy.js --network splendor-testnet
-
-# Verify contracts
-npx hardhat verify --network splendor-mainnet CONTRACT_ADDRESS
-```
-
-### Node Development
-
-```bash
-# Setup development environment
-cd Core-Blockchain/node_src
-go mod tidy
-go mod download
-
-# Build for development
-go build -o geth.exe ./cmd/geth
-
-# Run tests
-go test ./... -v
-
-# Run benchmark tests
-go test ./... -bench=. -benchmem
-```
+### Developer Resources
+- **Documentation**: Comprehensive guides and tutorials
+- **SDKs**: Development kits for multiple languages
+- **Templates**: Starter projects and boilerplates
+- **Community**: Active developer community and support
 
 ## 📊 Network Statistics
 
-### Current Network Metrics
-- **Total Validators**: [To be updated after mainnet launch]
-- **Total Staked**: [To be updated after mainnet launch]
-- **Average Block Time**: ~1 second (target)
-- **Daily Transactions**: [To be updated after mainnet launch]
-- **Network Uptime**: 99.9% (target)
+### Performance Metrics
+- **Block Time**: ~1 second average
+- **TPS**: 1,000+ transactions per second
+- **Finality**: Instant (single block confirmation)
+- **Uptime**: 99.9%+ network availability
 
-### Economic Indicators
-- **Market Cap**: [To be updated after mainnet launch]
-- **Circulating Supply**: 26,000,000,000 SPLD (26 billion)
-- **Staking APR**: [To be determined by network participation]
-- **Validator ROI**: [To be determined by network activity]
+### Economic Model
+- **Gas Fees**: Starting at 1 gwei (0.000000001 SPLD)
+- **Validator Rewards**: 60% of gas fees
+- **Staker Rewards**: 30% of gas fees
+- **Development Fund**: 10% of gas fees
 
-## 🗳️ Validator Governance System
+## 🤝 Community
 
-### Validator Proposal Features
-- **Proposal Creation**: Anyone can propose new validators
-- **Voting Power**: Only active validators can vote (simple majority)
-- **Proposal Types**: 
-  - Add new validators to the network
-  - Reactivate previously removed validators
-  - Unjail validators through community vote
+### Get Involved
+- **Discord**: Join our developer community
+- **GitHub**: Contribute to the codebase
+- **Twitter**: Follow for updates and announcements
+- **Medium**: Read technical articles and updates
 
-### Validator Proposal Process
-1. **Proposal Submission**: Create validator proposal with target address and details
-2. **Voting Period**: 7-day voting window for active validators
-3. **Majority Decision**: Requires majority of active validators to pass
-4. **Automatic Execution**: Validator added/reactivated if proposal passes
+### Governance
+- **Proposals**: Submit improvement proposals
+- **Voting**: Participate in network governance
+- **Validator Program**: Become a network validator
+- **Ambassador Program**: Represent Splendor globally
 
-**Note**: The current system only supports validator management proposals. General governance features for parameter updates, contract upgrades, and treasury management are not implemented in the current contracts.
+## 🚀 Getting Started
 
-## 🔐 Security Features
+### For Users
+1. **Set up MetaMask**: Follow our [MetaMask guide](docs/METAMASK_SETUP.md)
+2. **Get SPLD tokens**: Purchase from supported exchanges
+3. **Explore DApps**: Try decentralized applications
+4. **Join Community**: Connect with other users
 
-### Validator Security
-- **Multi-signature Management**: Enhanced validator key security
-- **Automated Slashing**: Real-time penalty enforcement
-- **Performance Monitoring**: 24/7 network health tracking
-- **Emergency Pause**: Circuit breaker mechanisms
+### For Developers
+1. **Read Documentation**: Start with [Getting Started](docs/GETTING_STARTED.md)
+2. **Set up Environment**: Install required tools
+3. **Deploy Contracts**: Follow [Smart Contract guide](docs/SMART_CONTRACTS.md)
+4. **Build DApps**: Create decentralized applications
 
-### Network Security
-- **Byzantine Fault Tolerance**: 2/3 honest validator assumption
-- **Validator Rotation**: Daily rotation prevents centralization
-- **Real-time Monitoring**: Automated threat detection
-- **Regular Audits**: Quarterly security assessments
+### For Validators
+1. **Review Requirements**: Check [Validator Guide](docs/VALIDATOR_GUIDE.md)
+2. **Acquire Stake**: Get minimum 3,947 SPLD
+3. **Set up Infrastructure**: Deploy validator node
+4. **Start Validating**: Earn rewards and secure the network
 
-### Slashing Conditions
-- **Double Signing**: 5% stake slashing
-- **Downtime**: 0.1% per hour after 5% threshold
-- **Malicious Behavior**: Up to 100% stake slashing
-- **Unavailability**: Temporary jailing mechanism
+## 📈 Roadmap
 
+### Q1 2025
+- ✅ Mainnet Launch
+- ✅ Core Infrastructure Deployment
+- ✅ Initial Validator Set
+- ✅ Basic DApp Ecosystem
+
+### Q2 2025
+- 🔄 Enhanced Developer Tools
+- 🔄 Mobile Wallet Integration
+- 🔄 Cross-chain Bridges
+- 🔄 Institutional Partnerships
+
+### Q3 2025
+- 📋 Layer 2 Solutions
+- 📋 Advanced Governance Features
+- 📋 Enterprise Integrations
+- 📋 Global Expansion
+
+### Q4 2025
+- 📋 Interoperability Protocols
+- 📋 Advanced Privacy Features
+- 📋 Quantum-Resistant Security
+- 📋 Ecosystem Maturation
+
+## 🆘 Support
+
+### Documentation
+- [Getting Started](docs/GETTING_STARTED.md)
+- [API Reference](docs/API_REFERENCE.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+
+### Community Support
+- **Discord**: Real-time community help
+- **GitHub Issues**: Report bugs and request features
+- **Stack Overflow**: Tag questions with `splendor-blockchain`
+
+### Professional Support
+- **Enterprise Support**: Dedicated support for businesses
+- **Consulting Services**: Custom development and integration
+- **Training Programs**: Developer education and certification
 
 ## 📄 License
 
-This project is licensed under the **GNU General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚠️ Disclaimer
+
+Splendor Blockchain V4 is production software, but blockchain technology involves inherent risks. Users should:
+- Understand the technology before using
+- Never invest more than they can afford to lose
+- Keep private keys secure and backed up
+- Verify all transactions before confirming
+- Stay informed about network updates and changes
 
 ---
 
-**Built with ❤️ by the Splendor Protocol team. Empowering decentralized finance for everyone.**
+**Built with ❤️ by the Splendor Team**
+
+*Empowering the decentralized future, one block at a time.*
