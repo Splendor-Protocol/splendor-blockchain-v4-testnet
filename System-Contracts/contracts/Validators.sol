@@ -388,8 +388,11 @@ contract Validators is Params {
         uint validPercent = reflectionPercentSum[validator][lastRewardTime[validator]] - reflectionPercentSum[validator][stakeTime[tx.origin][validator]];
         if(validPercent > 0)
         {
-            stakeTime[tx.origin][validator] = lastRewardTime[validator];
             uint reward = stakingInfo.coins * validPercent / 100000000000000000000  ;
+            
+            // SECURITY FIX: Update state BEFORE external transfer
+            stakeTime[tx.origin][validator] = lastRewardTime[validator];
+            
             payable(tx.origin).transfer(reward);
             emit withdrawStakingRewardEv(tx.origin, validator, reward, block.timestamp);
         }
@@ -412,6 +415,8 @@ contract Validators is Params {
         require(stakingInfo.coins > 0, "You don't have any stake");
 
         uint256 staking = stakingInfo.coins;
+        
+        // SECURITY FIX: Update state BEFORE external transfer
         stakingInfo.coins = 0;
         stakingInfo.unstakeBlock = 0;
 
@@ -462,6 +467,9 @@ contract Validators is Params {
     }
 
 
+    // SECURITY FIX: Add maximum validators to process per transaction to prevent gas limit attacks
+    uint256 public constant MAX_REWARD_VALIDATORS = 100;
+
     // distributeBlockReward distributes block reward to all active validators
     function distributeBlockReward(address[] memory _to, uint64[] memory _gass)
         external
@@ -470,6 +478,9 @@ contract Validators is Params {
         onlyNotRewarded
         onlyInitialized
     {
+        // SECURITY FIX: Limit validator processing to prevent gas limit attacks
+        require(currentValidatorSet.length <= MAX_REWARD_VALIDATORS, 
+                "Too many validators for single transaction");
         operationsDone[block.number][uint8(Operations.Distribute)] = true;
         address val = msg.sender;
         uint256 reward = msg.value;

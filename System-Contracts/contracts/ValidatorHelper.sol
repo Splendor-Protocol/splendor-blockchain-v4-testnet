@@ -292,8 +292,8 @@ contract ValidatorHelper is Ownable {
 
 	    valContract.withdrawProfits(validator);
        
+        // SECURITY FIX: Update state BEFORE external transfer
         rewardFund -= blockRewards;      
-        
         rewardBalance[validator] = 0;
         totalProfitWithdrawn[validator] += blockRewards;
 

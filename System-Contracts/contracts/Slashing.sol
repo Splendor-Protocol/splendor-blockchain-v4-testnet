@@ -128,22 +128,24 @@ contract Slashing is Params {
         // Verify the evidence is valid
         bool isValid = _verifyDoubleSignEvidence(evidence);
         
+        // SECURITY FIX: Update state BEFORE external calls
+        evidence.processed = true;
+        
         if (isValid) {
+            // Update slashing record before external calls
+            slashingRecords[validator].doubleSignCount++;
+            slashingRecords[validator].lastSlashTime = block.timestamp;
+            
             // Apply slashing
             _slashValidator(validator, doubleSignSlashAmount, "Double signing");
             
             // Jail the validator
             _jailValidator(validator, doubleSignJailTime);
             
-            // Update slashing record
-            slashingRecords[validator].doubleSignCount++;
-            slashingRecords[validator].lastSlashTime = block.timestamp;
-            
-            // Remove from active validator set
+            // Remove from active validator set (external call)
             validators.removeValidator(validator);
         }
         
-        evidence.processed = true;
         emit EvidenceProcessed(evidenceHash, isValid);
     }
     

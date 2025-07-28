@@ -8,6 +8,9 @@ contract Punish is Params {
     uint256 public punishThreshold;
     uint256 public removeThreshold;
     uint256 public decreaseRate;
+    
+    // SECURITY FIX: Add maximum validators to process per transaction to prevent gas limit attacks
+    uint256 public constant MAX_VALIDATORS_PER_TX = 50;
 
     struct PunishRecord {
         uint256 missedBlocksCounter;
@@ -51,6 +54,7 @@ contract Punish is Params {
         onlyInitialized
         onlyNotPunished
     {
+        // SECURITY FIX: Update state BEFORE external calls
         punished[block.number] = true;
         if (!punishRecords[val].exist) {
             punishRecords[val].index = punishValidators.length;
@@ -59,13 +63,20 @@ contract Punish is Params {
         }
         punishRecords[val].missedBlocksCounter++;
 
-        if (punishRecords[val].missedBlocksCounter % removeThreshold == 0) {
-            validators.removeValidator(val);
+        // Store values for external calls
+        bool shouldRemove = punishRecords[val].missedBlocksCounter % removeThreshold == 0;
+        bool shouldRemoveIncoming = punishRecords[val].missedBlocksCounter % punishThreshold == 0;
+
+        // Update state before external calls
+        if (shouldRemove) {
             // reset validator's missed blocks counter
             punishRecords[val].missedBlocksCounter = 0;
-        } else if (
-            punishRecords[val].missedBlocksCounter % punishThreshold == 0
-        ) {
+        }
+
+        // Now make external calls after state is updated
+        if (shouldRemove) {
+            validators.removeValidator(val);
+        } else if (shouldRemoveIncoming) {
             validators.removeValidatorIncoming(val);
         }
 
@@ -84,7 +95,11 @@ contract Punish is Params {
             return;
         }
 
-        for (uint256 i = 0; i < punishValidators.length; i++) {
+        // SECURITY FIX: Limit the number of validators processed per transaction
+        uint256 processCount = punishValidators.length > MAX_VALIDATORS_PER_TX ? 
+                              MAX_VALIDATORS_PER_TX : punishValidators.length;
+        
+        for (uint256 i = 0; i < processCount; i++) {
             if (
                 punishRecords[punishValidators[i]].missedBlocksCounter >
                 removeThreshold / decreaseRate

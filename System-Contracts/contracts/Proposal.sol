@@ -152,9 +152,12 @@ contract Proposal is Params {
             proposals[id].agree >=
             validators.getActiveValidators().length / 2 + 1
         ) {
+            // SECURITY FIX: Update all state variables BEFORE external calls
             pass[proposals[id].dst] = true;
             proposals[id].resultExist = true;
+            lastProposalActive[proposals[id].dst] = false;
 
+            // Now make external calls after state is updated
             // try to reactive validator if it isn't the first time
             validators.tryReactive(proposals[id].dst);
             
@@ -164,7 +167,6 @@ contract Proposal is Params {
                 emit LogUnjailValidator(proposals[id].dst, block.timestamp);
             }
             
-            lastProposalActive[proposals[id].dst] = false;
             emit LogPassProposal(id, proposals[id].dst, block.timestamp);
 
             return true;
