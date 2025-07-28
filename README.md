@@ -54,9 +54,9 @@ Our innovative validator system ensures fair participation and network security:
   - Blacklist management
   
 - **Proposal Contract** (0x000000000000000000000000000000000000F002)
-  - On-chain governance system
-  - Community proposals and voting
-  - Parameter updates and network upgrades
+  - Validator proposal system
+  - Add/remove validator voting
+  - Validator reactivation and unjailing
 
 - **Slashing Contract** (0x000000000000000000000000000000000000F003)
   - Double-sign detection and penalties
@@ -167,12 +167,12 @@ cd Core-Blockchain
 - **Base Rewards**: Proportional to stake amount
 - **Performance Bonuses**: Additional rewards for high uptime
 - **Tier Multipliers**: Enhanced rewards for higher tiers
-- **Governance Rewards**: Participation in network governance
+- **Validator Voting**: Participation in validator proposal voting
 
 ### Reward Distribution Schedule
-- **Daily Rewards**: Distributed every 24 hours
+- **Per-Block Rewards**: Distributed on a block-by-block basis
 - **Compound Interest**: Auto-compounding for staked rewards
-- **Claim Period**: 7-day unbonding period for unstaking
+- **Unstaking Period**: 86,400 blocks (~24 hours) lock-up period after unstaking
 
 ## 🏗️ Development
 
@@ -229,22 +229,23 @@ go test ./... -bench=. -benchmem
 - **Staking APR**: [To be determined by network participation]
 - **Validator ROI**: [To be determined by network activity]
 
-## 🗳️ Governance System
+## 🗳️ Validator Governance System
 
-### On-Chain Governance Features
-- **Proposal Creation**: Any SPLD holder can create proposals
-- **Voting Power**: Weighted by stake amount and validator tier
+### Validator Proposal Features
+- **Proposal Creation**: Anyone can propose new validators
+- **Voting Power**: Only active validators can vote (simple majority)
 - **Proposal Types**: 
-  - Parameter updates
-  - Contract upgrades
-  - Treasury spending
-  - Network upgrades
+  - Add new validators to the network
+  - Reactivate previously removed validators
+  - Unjail validators through community vote
 
-### Governance Process
-1. **Proposal Submission**: Create on-chain proposal with 1000 SPLD deposit
-2. **Discussion Period**: 7-day community discussion and review
-3. **Voting Period**: 7-day on-chain voting window
-4. **Implementation**: Automatic execution if passed
+### Validator Proposal Process
+1. **Proposal Submission**: Create validator proposal with target address and details
+2. **Voting Period**: 7-day voting window for active validators
+3. **Majority Decision**: Requires majority of active validators to pass
+4. **Automatic Execution**: Validator added/reactivated if proposal passes
+
+**Note**: The current system only supports validator management proposals. General governance features for parameter updates, contract upgrades, and treasury management are not implemented in the current contracts.
 
 ## 🔐 Security Features
 
