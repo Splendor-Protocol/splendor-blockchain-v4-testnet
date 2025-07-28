@@ -63,6 +63,11 @@ Our innovative validator system ensures fair participation and network security:
   - Validator jailing mechanisms
   - Evidence processing and validation
 
+- **Params Contract** (0x000000000000000000000000000000000000F004)
+  - System parameter management
+  - Network configuration constants
+  - Cross-contract parameter access
+
 ## 🚀 Getting Started
 
 ### Prerequisites
