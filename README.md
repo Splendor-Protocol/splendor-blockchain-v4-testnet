@@ -88,7 +88,7 @@ Splendor uses an enhanced Proof of Authority consensus called "Congress" that pr
 - **Fast Finality**: Transactions confirmed in ~1 second
 - **High Security**: Byzantine fault tolerance with validator rotation
 - **Energy Efficient**: No wasteful mining, minimal environmental impact
-- **Scalable**: Supports thousands of transactions per second
+- **Ultra-Scalable**: Supports 6,000+ transactions per second with 300M gas limit
 
 ### Validator Tiers
 | Tier | Stake Required | Benefits |
@@ -196,7 +196,7 @@ npx hardhat run scripts/deploy.js --network splendor
 
 ### Performance Metrics
 - **Block Time**: ~1 second average
-- **TPS**: 1,000+ transactions per second
+- **TPS**: 6,000+ transactions per second (300M gas limit)
 - **Finality**: Instant (single block confirmation)
 - **Uptime**: 99.9%+ network availability
 
