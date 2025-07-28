@@ -133,7 +133,7 @@ cd Core-Blockchain
 #### Genesis Configuration
 - **Chain ID**: 2691 (0xA83) - Splendor mainnet
 - **Network ID**: 2691
-- **Initial Supply**: 100,000,000 SPLD
+- **Total Supply**: 26,000,000,000 SPLD (26 billion)
 - **Block Gas Limit**: 2,000,000,000,000,000 (2 quadrillion)
 - **Gas Price**: Dynamic pricing based on network congestion
 - **Consensus**: Congress (enhanced DPoS)
@@ -225,7 +225,7 @@ go test ./... -v
 - **Epoch Size**: 200 blocks
 
 ### Economic Parameters
-- **Total Supply**: 100,000,000 SPLD
+- **Total Supply**: 26,000,000,000 SPLD (26 billion)
 - **Initial Allocation**: Genesis block allocation
 - **Staking Requirements**: 3,947 - 394,737 SPLD (tier-based)
 - **Fee Distribution**: 60/30/10 model (validators/stakers/development)
