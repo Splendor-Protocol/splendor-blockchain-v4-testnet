@@ -126,3 +126,8 @@ coverage.json
 # Temporary files
 tmp/
 temp/
+
+# Server configuration files
+nginx-splendor-rpc.conf
+server-genesis.json
+server-node-start.sh
