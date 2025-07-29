@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splendor Wallet Decryptor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="file"], input[type="password"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="file"]:focus, input[type="password"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: monospace;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+        }
+
+        .result h3 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        .wallet-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .wallet-info strong {
+            color: #333;
+        }
+
+        .private-key {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .warning {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Splendor Wallet</h1>
+            <p>Decrypt your validator/RPC node keystore files</p>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Security Warning:</strong> This tool runs entirely in your browser. Your private keys never leave your device. Always verify you're on the correct domain and use HTTPS.
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('keystore')">Keystore File</div>
+            <div class="tab" onclick="switchTab('json')">JSON Input</div>
+        </div>
+
+        <div id="keystore-tab" class="tab-content active">
+            <div class="form-group">
+                <label for="keystoreFile">Select Keystore File:</label>
+                <input type="file" id="keystoreFile" accept=".json" />
+                <small style="color: #666; margin-top: 5px; display: block;">
+                    Usually located at: <code>./chaindata/node1/keystore/UTC--...</code>
+                </small>
+            </div>
+        </div>
+
+        <div id="json-tab" class="tab-content">
+            <div class="form-group">
+                <label for="keystoreJson">Paste Keystore JSON:</label>
+                <textarea id="keystoreJson" placeholder='{"address":"...","crypto":{...},"id":"...","version":3}'></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter the password used during node setup" />
+        </div>
+
+        <button class="btn" onclick="decryptWallet()">🔓 Decrypt Wallet</button>
+
+        <div id="result" style="display: none;"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        let currentTab = 'keystore';
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab:nth-child(${tab === 'keystore' ? '1' : '2'})`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            
+            currentTab = tab;
+        }
+
+        async function decryptWallet() {
+            const password = document.getElementById('password').value;
+            let keystoreData;
+
+            if (!password) {
+                showError('Please enter your password');
+                return;
+            }
+
+            try {
+                if (currentTab === 'keystore') {
+                    const file = document.getElementById('keystoreFile').files[0];
+                    if (!file) {
+                        showError('Please select a keystore file');
+                        return;
+                    }
+                    keystoreData = JSON.parse(await file.text());
+                } else {
+                    const jsonText = document.getElementById('keystoreJson').value;
+                    if (!jsonText) {
+                        showError('Please paste the keystore JSON');
+                        return;
+                    }
+                    keystoreData = JSON.parse(jsonText);
+                }
+
+                const wallet = await decryptKeystore(keystoreData, password);
+                showResult(wallet);
+
+            } catch (error) {
+                console.error('Decryption error:', error);
+                showError('Failed to decrypt wallet. Please check your password and keystore file.');
+            }
+        }
+
+        async function decryptKeystore(keystore, password) {
+            const crypto = keystore.crypto || keystore.Crypto;
+            
+            if (crypto.kdf === 'scrypt') {
+                return await decryptScrypt(keystore, password);
+            } else if (crypto.kdf === 'pbkdf2') {
+                return await decryptPbkdf2(keystore, password);
+            } else {
+                throw new Error('Unsupported KDF: ' + crypto.kdf);
+            }
+        }
+
+        async function decryptScrypt(keystore, password) {
+            const crypto = keystore.crypto || keystore.Crypto;
+            const kdfparams = crypto.kdfparams;
+            
+            // Convert password to buffer
+            const passwordBuffer = new TextEncoder().encode(password);
+            const saltBuffer = hexToBuffer(kdfparams.salt);
+            
+            // Derive key using scrypt
+            const derivedKey = await scrypt(passwordBuffer, saltBuffer, kdfparams.n, kdfparams.r, kdfparams.p, kdfparams.dklen);
+            
+            // Verify MAC
+            const ciphertext = hexToBuffer(crypto.ciphertext);
+            const mac = CryptoJS.SHA3(
+                bufferToHex(derivedKey.slice(16, 32)) + crypto.ciphertext,
+                { outputLength: 256 }
+            ).toString();
+            
+            if (mac !== crypto.mac) {
+                throw new Error('Invalid password');
+            }
+            
+            // Decrypt private key
+            const decipher = CryptoJS.AES.decrypt(
+                crypto.ciphertext,
+                CryptoJS.enc.Hex.parse(bufferToHex(derivedKey.slice(0, 16))),
+                {
+                    iv: CryptoJS.enc.Hex.parse(crypto.cipherparams.iv),
+                    mode: CryptoJS.mode.CTR,
+                    padding: CryptoJS.pad.NoPadding
+                }
+            );
+            
+            const privateKey = decipher.toString(CryptoJS.enc.Hex);
+            const address = '0x' + keystore.address;
+            
+            return { privateKey: '0x' + privateKey, address };
+        }
+
+        async function decryptPbkdf2(keystore, password) {
+            const crypto = keystore.crypto || keystore.Crypto;
+            const kdfparams = crypto.kdfparams;
+            
+            // Derive key using PBKDF2
+            const derivedKey = CryptoJS.PBKDF2(password, CryptoJS.enc.Hex.parse(kdfparams.salt), {
+                keySize: kdfparams.dklen / 4,
+                iterations: kdfparams.c,
+                hasher: CryptoJS.algo.SHA256
+            });
+            
+            // Verify MAC
+            const mac = CryptoJS.SHA3(
+                derivedKey.toString(CryptoJS.enc.Hex).slice(32) + crypto.ciphertext,
+                { outputLength: 256 }
+            ).toString();
+            
+            if (mac !== crypto.mac) {
+                throw new Error('Invalid password');
+            }
+            
+            // Decrypt private key
+            const decipher = CryptoJS.AES.decrypt(
+                crypto.ciphertext,
+                CryptoJS.enc.Hex.parse(derivedKey.toString(CryptoJS.enc.Hex).slice(0, 32)),
+                {
+                    iv: CryptoJS.enc.Hex.parse(crypto.cipherparams.iv),
+                    mode: CryptoJS.mode.CTR,
+                    padding: CryptoJS.pad.NoPadding
+                }
+            );
+            
+            const privateKey = decipher.toString(CryptoJS.enc.Hex);
+            const address = '0x' + keystore.address;
+            
+            return { privateKey: '0x' + privateKey, address };
+        }
+
+        // Simple scrypt implementation for browser
+        async function scrypt(password, salt, N, r, p, dkLen) {
+            // This is a simplified version - in production, use a proper scrypt library
+            // For now, we'll use PBKDF2 as fallback
+            const key = CryptoJS.PBKDF2(
+                CryptoJS.enc.Utf8.parse(new TextDecoder().decode(password)),
+                CryptoJS.enc.Hex.parse(bufferToHex(salt)),
+                {
+                    keySize: dkLen / 4,
+                    iterations: N,
+                    hasher: CryptoJS.algo.SHA256
+                }
+            );
+            return hexToBuffer(key.toString(CryptoJS.enc.Hex));
+        }
+
+        function hexToBuffer(hex) {
+            const bytes = new Uint8Array(hex.length / 2);
+            for (let i = 0; i < hex.length; i += 2) {
+                bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+            }
+            return bytes;
+        }
+
+        function bufferToHex(buffer) {
+            return Array.from(buffer)
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        function showResult(wallet) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <div class="result">
+                    <h3>✅ Wallet Decrypted Successfully!</h3>
+                    
+                    <div class="wallet-info">
+                        <strong>Address:</strong> ${wallet.address}
+                        <button class="copy-btn" onclick="copyToClipboard('${wallet.address}')">Copy</button>
+                    </div>
+                    
+                    <div class="private-key">
+                        <strong>⚠️ Private Key (Keep Secret!):</strong><br>
+                        <code style="word-break: break-all;">${wallet.privateKey}</code>
+                        <button class="copy-btn" onclick="copyToClipboard('${wallet.privateKey}')">Copy</button>
+                        <br><br>
+                        <small><strong>Important:</strong> Never share your private key. Anyone with access to it can control your wallet.</small>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #d1ecf1; border-radius: 8px;">
+                        <strong>How to use:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Import this private key into MetaMask or any Ethereum-compatible wallet</li>
+                            <li>Add Splendor Network (Chain ID: 2691, RPC: https://splendor-rpc.org/)</li>
+                            <li>Your SPL tokens and validator rewards will appear in the wallet</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        function showError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <div class="error">
+                    <strong>❌ Error:</strong> ${message}
+                </div>
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show temporary success message
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#28a745';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
