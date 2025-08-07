@@ -375,6 +375,7 @@ finalize(){
   chaindataPath=$nodePath/chaindata/node1/geth
   snapshotName=$nodePath/chaindata.tar.gz
 
+  # added gitkeep
   # echo -e "\n\n\t${ORANGE}Removing existing chaindata, if any${NC}"
   
   # rm -rf $chaindataPath/chaindata
@@ -399,7 +400,7 @@ finalize(){
   # sleep 3
   cd $nodePath
   
-  
+
   install_nvm
   cd $nodePath/plugins/sync-helper
   yarn
