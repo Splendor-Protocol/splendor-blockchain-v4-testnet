@@ -12,7 +12,7 @@ contract Params {
     address
         public constant ProposalAddr = 0x000000000000000000000000000000000000F002;
     address
-        public constant SlashingContractAddr = 0x000000000000000000000000000000000000F003;
+        public constant SlashingContractAddr = 0x000000000000000000000000000000000000f007;
 
     // System params
     uint16 public constant MaxValidators = 10000;

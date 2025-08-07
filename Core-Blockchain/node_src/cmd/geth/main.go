@@ -41,6 +41,7 @@ import (
 	"github.com/ethereum/go-ethereum/node"
 
 	// Force-load the tracer engines to trigger registration
+	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
 	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 
 	"gopkg.in/urfave/cli.v1"
@@ -315,6 +316,7 @@ func geth(ctx *cli.Context) error {
 // it unlocks any requested accounts, and starts the RPC/IPC interfaces and the
 // miner.
 func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend) {
+	debug.Memsize.Add("node", stack)
 
 	// Start up the node itself
 	utils.StartNode(ctx, stack)

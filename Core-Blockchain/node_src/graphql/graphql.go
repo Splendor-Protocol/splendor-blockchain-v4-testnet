@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// bug across the project fixed by EtherAuthority <https://etherauthority.io/>
 
 // Package graphql provides a GraphQL interface to Ethereum node data.
 package graphql
@@ -23,6 +24,7 @@ import (
 	"fmt"
 	"math/big"
 	"strconv"
+	"strings"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -50,20 +52,22 @@ func (b *Long) UnmarshalGraphQL(input interface{}) error {
 	switch input := input.(type) {
 	case string:
 		// uncomment to support hex values
-		//if strings.HasPrefix(input, "0x") {
-		//	// apply leniency and support hex representations of longs.
-		//	value, err := hexutil.DecodeUint64(input)
-		//	*b = Long(value)
-		//	return err
-		//} else {
-		value, err := strconv.ParseInt(input, 10, 64)
-		*b = Long(value)
-		return err
-		//}
+		if strings.HasPrefix(input, "0x") {
+			// apply leniency and support hex representations of longs.
+			value, err := hexutil.DecodeUint64(input)
+			*b = Long(value)
+			return err
+		} else {
+			value, err := strconv.ParseInt(input, 10, 64)
+			*b = Long(value)
+			return err
+		}
 	case int32:
 		*b = Long(input)
 	case int64:
 		*b = Long(input)
+	case float64: // Handle float64 type
+		*b = Long(int64(input))
 	default:
 		err = fmt.Errorf("unexpected type %T for Long", input)
 	}
@@ -597,20 +601,24 @@ func (b *Block) BaseFeePerGas(ctx context.Context) (*hexutil.Big, error) {
 
 func (b *Block) Parent(ctx context.Context) (*Block, error) {
 	// If the block header hasn't been fetched, and we'll need it, fetch it.
-	if b.numberOrHash == nil && b.header == nil {
-		if _, err := b.resolveHeader(ctx); err != nil {
-			return nil, err
-		}
+
+	if _, err := b.resolveHeader(ctx); err != nil {
+		return nil, err
 	}
-	if b.header != nil && b.header.Number.Uint64() > 0 {
-		num := rpc.BlockNumberOrHashWithNumber(rpc.BlockNumber(b.header.Number.Uint64() - 1))
-		return &Block{
-			backend:      b.backend,
-			numberOrHash: &num,
-			hash:         b.header.ParentHash,
-		}, nil
+
+	// Check if the block header is nil or the block number is less than 1
+	if b.header == nil || b.header.Number.Uint64() < 1 {
+		return nil, nil
 	}
-	return nil, nil
+
+	num := rpc.BlockNumberOrHashWithNumber(rpc.BlockNumber(b.header.Number.Uint64() - 1))
+	parentBlock := &Block{
+		backend:      b.backend,
+		numberOrHash: &num,
+		hash:         b.header.ParentHash,
+	}
+
+	return parentBlock, nil
 }
 
 func (b *Block) Difficulty(ctx context.Context) (hexutil.Big, error) {

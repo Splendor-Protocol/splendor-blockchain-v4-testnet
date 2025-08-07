@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// bug across the project fixed by EtherAuthority <https://etherauthority.io/>
 
 package snap
 
@@ -22,7 +23,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"math/big"
-	mrand "math/rand"
 	"sort"
 	"sync"
 	"testing"
@@ -37,7 +37,6 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
-	"github.com/ethereum/go-ethereum/trie/testutil"
 	"golang.org/x/crypto/sha3"
 )
 

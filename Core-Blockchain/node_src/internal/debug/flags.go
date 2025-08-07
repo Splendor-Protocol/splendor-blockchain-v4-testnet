@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// bug across the project fixed by EtherAuthority <https://etherauthority.io/>
 
 package debug
 
@@ -27,11 +28,13 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/metrics/exp"
+	"github.com/fjl/memsize/memsizeui"
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
 	"gopkg.in/urfave/cli.v1"
 )
 
+var Memsize memsizeui.Handler
 var ID string
 
 var (
@@ -253,6 +256,7 @@ func StartPProf(address string, withMetrics bool) {
 	if withMetrics {
 		exp.Exp(metrics.DefaultRegistry)
 	}
+	http.Handle("/memsize/", http.StripPrefix("/memsize", &Memsize))
 	log.Info("Starting pprof server", "addr", fmt.Sprintf("http://%s/debug/pprof", address))
 	go func() {
 		if err := http.ListenAndServe(address, nil); err != nil {

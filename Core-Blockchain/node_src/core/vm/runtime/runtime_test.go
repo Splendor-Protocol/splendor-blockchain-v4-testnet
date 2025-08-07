@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// bug across the project fixed by EtherAuthority <https://etherauthority.io/>
 
 package runtime
 
@@ -37,6 +38,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 
 	// force-load js tracers to trigger registration
+	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
 )
 
 func TestDefaults(t *testing.T) {

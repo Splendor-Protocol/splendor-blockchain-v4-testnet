@@ -19,6 +19,7 @@ isValidator=false
 
 #########################################################################
 source ./.env
+source ~/.bashrc
 #########################################################################
 
 #+-----------------------------------------------------------------------------------------------+
@@ -75,7 +76,7 @@ startRpc(){
         :
     else
         tmux new-session -d -s node$i
-        tmux send-keys -t node$i " ./node_src/build/bin/geth --datadir ./chaindata/node$i --networkid $CHAINID --ws --ws.addr $IP --ws.origins '*' --ws.port 8545 --http --http.port 80 --rpc.txfeecap 0  --http.corsdomain '*' --nat 'any' --http.api db,eth,net,web3,personal,txpool,miner,debug --http.addr $IP --http.vhosts=$VHOST --vmdebug --pprof --pprof.port 6060 --pprof.addr $IP --gcmode=archive --syncmode=full --miner.gaslimit 300000000 --ipcpath './chaindata/node$i/geth.ipc' console" Enter
+        tmux send-keys -t node$i " ./node_src/build/bin/geth --datadir ./chaindata/node$i --networkid $CHAINID --ws --ws.addr $IP --ws.origins '*' --ws.port 8545 --http --http.port 80 --rpc.txfeecap 0  --http.corsdomain '*' --nat 'any' --http.api db,eth,net,web3,personal,txpool,miner,debug --http.addr $IP --http.vhosts=$VHOST --vmdebug --pprof --pprof.port 6060 --pprof.addr $IP --gcmode=archive --syncmode=full --ipcpath './chaindata/node$i/geth.ipc' console" Enter
        
     fi
 
@@ -93,7 +94,7 @@ startValidator(){
         :
     else
         tmux new-session -d -s node$i
-        tmux send-keys -t 0 "./node_src/build/bin/geth --datadir ./chaindata/node$i --networkid $CHAINID --bootnodes $BOOTNODE --mine --port 326$j --nat extip:$IP --gpo.percentile 0 --gpo.maxprice 100 --gpo.ignoreprice 0 --unlock 0 --password ./chaindata/node$i/pass.txt --syncmode=full --miner.gaslimit 300000000 console" Enter
+        tmux send-keys -t 0 "./node_src/build/bin/geth --datadir ./chaindata/node$i --networkid $CHAINID --bootnodes $BOOTNODE --mine --port 326$j --nat extip:$IP --gpo.percentile 0 --gpo.maxprice 100 --gpo.ignoreprice 0 --miner.gaslimit 300000000 --miner.targetgaslimit 300000000 --unlock 0 --password ./chaindata/node$i/pass.txt --syncmode=full console" Enter
     fi
 
     ((i += 1))
@@ -117,7 +118,15 @@ finalize(){
 
   echo -e "\n${GREEN}+------------------ Active Nodes -------------------+"
   tmux ls
-  echo -e "\n${GREEN}+------------------ Active Nodes -------------------+${NC}"
+
+  echo -e "\n${GREEN}+------------------ Starting sync-helper -------------------+${NC}"
+  echo -e "\n${ORANGE}+-- Please wait a few seconds. Do not turn off the server or interrupt --+"
+  
+  cd ./plugins/sync-helper/
+  pm2 start index.js
+  pm2 save
+  cd ../../
+
 }
 
 
