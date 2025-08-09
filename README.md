@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Version](https://img.shields.io/badge/Go-1.15+-blue.svg)](https://golang.org)
 [![Node Version](https://img.shields.io/badge/Node-16+-green.svg)](https://nodejs.org)
-[![Network Status](https://img.shields.io/badge/Mainnet-Live-brightgreen.svg)](https://rpc.splendor.org/)
+[![Network Status](https://img.shields.io/badge/Mainnet-Live-brightgreen.svg)](https://mainnet-rpc.splendor.org/)
 
 A high-performance, enterprise-grade blockchain with Congress consensus mechanism, designed for scalability, security, and exceptional developer experience.
 
@@ -27,10 +27,10 @@ Splendor Blockchain V4 is a production-ready mainnet that combines the best of E
 | Parameter | Value |
 |-----------|-------|
 | **Network Name** | Splendor RPC |
-| **RPC URL** | https://rpc.splendor.org/ |
+| **RPC URL** | https://mainnet-rpc.splendor.org/ |
 | **Chain ID** | 2691 |
 | **Currency Symbol** | SPLD |
-| **Block Explorer** | https://mainnet.splendor.org/ |
+| **Block Explorer** | https://explorer.splendor.org/ |
 | **Block Time** | ~1 second |
 
 ### Connect to Mainnet
@@ -46,7 +46,7 @@ Splendor Blockchain V4 is a production-ready mainnet that combines the best of E
 const { ethers } = require('ethers');
 
 // Connect to Splendor mainnet
-const provider = new ethers.JsonRpcProvider('https://rpc.splendor.org/');
+const provider = new ethers.JsonRpcProvider('https://mainnet-rpc.splendor.org/');
 
 // Verify connection
 const network = await provider.getNetwork();
@@ -147,7 +147,7 @@ Pre-deployed contracts for network governance:
 module.exports = {
   networks: {
     splendor: {
-      url: "https://rpc.splendor.org/",
+      url: "https://mainnet-rpc.splendor.org/",
       chainId: 2691,
       accounts: [process.env.PRIVATE_KEY]
     }
