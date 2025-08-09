@@ -149,7 +149,7 @@ abstract contract Ownable is Context {
     }
 }
  
-contract ValidatorHelper is Ownable {
+contract ValidatorController is Ownable {
 
     InterfaceValidator public valContract = InterfaceValidator(0x000000000000000000000000000000000000f000);
     uint256 public minimumValidatorStaking = 3947 * 1e18; // Bronze tier minimum
@@ -158,6 +158,9 @@ contract ValidatorHelper is Ownable {
     uint256 public rewardFund;    
     mapping(address=>uint256) public rewardBalance;
     mapping(address=>uint256) public totalProfitWithdrawn;
+    
+    // Per-validator block tracking for fair rewards
+    mapping(address => uint256) public lastClaimBlock;
     
     // Selective reward system - only approved validators get annual staking rewards
     mapping(address => bool) public approvedForRewards;
@@ -283,23 +286,34 @@ contract ValidatorHelper is Ownable {
         return true;
     }
 
+    // Tier-based reward function: Claims annual rewards based on validator's tier
     function withdrawStakingReward(address validator) external whenNotPaused {
         require(validator == tx.origin, "caller should be real validator");
         require(approvedForRewards[validator], "Validator not approved for rewards");
         
-        uint256 blockRewards = viewValidatorRewards(validator);
-        require(blockRewards > 0, "Nothing to withdraw");
-
-	    valContract.withdrawProfits(validator);
-       
-        // SECURITY FIX: Update state BEFORE external transfer
-        rewardFund -= blockRewards;      
-        rewardBalance[validator] = 0;
-        totalProfitWithdrawn[validator] += blockRewards;
-
-        payable(validator).transfer(blockRewards);
-
-        emit WithdrawProfit( validator,  blockRewards,  block.timestamp);
+        // Only annual tier-based rewards (block rewards disabled)
+        uint256 annualRewards = viewAnnualStakingReward(validator);
+        
+        require(annualRewards > 0, "No annual rewards available");
+        require(address(this).balance >= annualRewards, "Insufficient contract balance");
+        
+        valContract.withdrawProfits(validator);
+        
+        // Update annual reward tracking
+        lastAnnualRewardClaim[validator] = block.timestamp;
+        
+        // Update reward fund
+        if (annualRewards <= rewardFund) {
+            rewardFund -= annualRewards;
+        } else {
+            rewardFund = 0;
+        }
+        
+        totalProfitWithdrawn[validator] += annualRewards;
+        
+        payable(validator).transfer(annualRewards);
+        
+        emit WithdrawProfit(validator, annualRewards, block.timestamp);
     }
 
     // NEW: Withdraw annual staking rewards (100% of staked amount per year)
@@ -409,30 +423,8 @@ contract ValidatorHelper is Ownable {
     }
 
     function viewValidatorRewards(address validator) public view returns(uint256 rewardAmount){
-        // Only approved validators can earn rewards
-        if (!approvedForRewards[validator]) {
-            return 0;
-        }
-
-        (, InterfaceValidator.Status validatorStatus, , , ,  ) = valContract.getValidatorInfo(validator);
-
-        // if validator is jailed, non-exist, or created, then he will not get any rewards
-        if(validatorStatus == InterfaceValidator.Status.Jailed || validatorStatus == InterfaceValidator.Status.NotExist || validatorStatus == InterfaceValidator.Status.Created ){
-            return 0;
-        }
-
-        // if this smart contract has enough fund and if this validator is not unstaked, 
-        // then he will receive the block rewards.
-        // block reward is dynamically calculated based on total blocks mined 
-        if(rewardFund >= extraRewardsPerBlock && address(this).balance > extraRewardsPerBlock && validatorStatus != InterfaceValidator.Status.Unstaked){
-            uint256 totalApprovedValidators = approvedValidators.length;
-
-            if(totalApprovedValidators > 0 && block.number - lastRewardedBlock >= totalApprovedValidators ){
-                rewardAmount = (block.number - lastRewardedBlock) * extraRewardsPerBlock / totalApprovedValidators;
-            }
-        }
-        
-        return rewardBalance[validator] + rewardAmount;        
+        // Block rewards disabled - only tier-based annual rewards
+        return rewardBalance[validator];        
     }
 
     // Internal function to approve/disapprove validators for annual staking rewards
@@ -473,6 +465,17 @@ contract ValidatorHelper is Ownable {
         for (uint256 i = 0; i < validators.length; i++) {
             _setValidatorRewardApproval(validators[i], approved);
         }
+    }
+
+    // Fair distribution function (from test contract)
+    function _distributeRewards() internal {
+        address[] memory highestValidatorsSet = valContract.getTopValidators();
+        uint256 totalValidators = highestValidatorsSet.length;
+
+        for(uint8 i=0; i < totalValidators; i++){
+            rewardBalance[highestValidatorsSet[i]] = viewValidatorRewards(highestValidatorsSet[i]);
+        }
+        lastRewardedBlock = block.number;        
     }
 
     // NEW: Admin function to manually distribute rewards to approved validators
@@ -595,6 +598,22 @@ contract ValidatorHelper is Ownable {
 
     function changeExtraRewardsPerBlock(uint256 amount) external onlyOwner{
         extraRewardsPerBlock = amount;
+    }
+
+    // NEW: Disable block rewards completely (recommended fix)
+    function disableBlockRewards() external onlyOwner {
+        extraRewardsPerBlock = 0;
+    }
+
+    // NEW: Admin function to reset lastRewardedBlock (fixes the massive reward bug)
+    function resetLastRewardedBlock() external onlyAdmin {
+        lastRewardedBlock = block.number;
+    }
+
+    // NEW: Admin function to set lastRewardedBlock to a specific block (for precise control)
+    function setLastRewardedBlock(uint256 blockNumber) external onlyOwner {
+        require(blockNumber <= block.number, "Cannot set future block");
+        lastRewardedBlock = blockNumber;
     }
 
     // NEW: Change annual reward rate (owner only)
