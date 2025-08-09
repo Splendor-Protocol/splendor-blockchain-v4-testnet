@@ -30,7 +30,7 @@ Splendor Blockchain V4 is a production-ready mainnet that combines the best of E
 | **RPC URL** | https://mainnet-rpc.splendor.org/ |
 | **Chain ID** | 2691 |
 | **Currency Symbol** | SPLD |
-| **Block Explorer** | https://mainnet.splendor.org/ |
+| **Block Explorer** | https://explorer.splendor.org/ |
 | **Block Time** | ~1 second |
 
 ### Connect to Mainnet

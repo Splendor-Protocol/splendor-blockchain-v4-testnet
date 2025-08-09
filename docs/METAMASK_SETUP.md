@@ -25,7 +25,7 @@ This guide will help you connect MetaMask to the Splendor Blockchain V4 mainnet 
    | **New RPC URL** | https://mainnet-rpc.splendor.org/ |
    | **Chain ID** | 2691 |
    | **Currency Symbol** | SPLD |
-   | **Block Explorer URL** | https://mainnet.splendor.org/ |
+   | **Block Explorer URL** | https://explorer.splendor.org/ |
 
 5. **Click "Save"**
 
@@ -49,7 +49,7 @@ async function addSplendorMainnet() {
           decimals: 18
         },
         rpcUrls: ['https://mainnet-rpc.splendor.org/'],
-        blockExplorerUrls: ['https://mainnet.splendor.org/']
+        blockExplorerUrls: ['https://explorer.splendor.org/']
       }]
     });
     console.log('Splendor Mainnet added successfully!');
