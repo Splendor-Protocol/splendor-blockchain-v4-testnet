@@ -181,7 +181,7 @@ task8(){
 
       3)
         read -p "Enter the full path to your JSON keystore file: " json_path
-        if [[ ! -f "$json_path" ]]; thenstopNode
+        if [[ ! -f "$json_path" ]]; then
           log_error "File not found: $json_path. Skipping validator $i."
         else
           read -s -p "Enter password to decrypt the keystore file: " password
