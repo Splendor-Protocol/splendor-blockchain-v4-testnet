@@ -5,7 +5,8 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 NC='\033[0m' # No Color
-BASE_DIR='/root/splendor-blockchain-v4/'
+CYAN='\033[0;36m'
+BASE_DIR='/root/splendor-blockchain-v4'
 
 #########################################################################
 totalRpc=0
@@ -180,7 +181,7 @@ task8(){
 
       3)
         read -p "Enter the full path to your JSON keystore file: " json_path
-        if [[ ! -f "$json_path" ]]; then
+        if [[ ! -f "$json_path" ]]; thenstopNode
           log_error "File not found: $json_path. Skipping validator $i."
         else
           read -s -p "Enter password to decrypt the keystore file: " password
@@ -338,7 +339,7 @@ install_nvm() {
 #Logger setup
 
 log_step() {
-  echo -e "${ORANGE}➜ ${GREEN}$1${NC}"
+  echo -e "${CYAN}➜ ${GREEN}$1${NC}"
 }
 
 log_success() {
@@ -350,11 +351,11 @@ log_error() {
 }
 
 log_wait() {
-  echo -e "${ORANGE}🕐 $1...${NC}"
+  echo -e "${CYAN}🕐 $1...${NC}"
 }
 
 progress_bar() {
-  echo -en "${ORANGE}["
+  echo -en "${CYAN}["
   for i in {1..60}; do
     echo -en "#"
     sleep 0.01

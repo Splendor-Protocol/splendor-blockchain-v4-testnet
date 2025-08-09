@@ -102,8 +102,8 @@ Pre-deployed contracts for network governance:
 - **Validators** (`0x...F000`): Validator management and staking
 - **Punish** (`0x...F001`): Slashing and penalty mechanisms
 - **Proposal** (`0x...F002`): Governance proposals and voting
-- **Slashing** (`0x...F003`): Misbehavior detection and penalties
-- **Params** (`0x...F004`): Network parameter management
+- **Slashing** (`0x...F007`): Misbehavior detection and penalties
+<!-- - **Params** (`0x...F004`): Network parameter management -->
 
 ## 💼 Use Cases
 

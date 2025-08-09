@@ -101,6 +101,7 @@ Whenever a validator is found not to pack blocks as predefined, the `Punish` con
 - **Validators Contract:** `0x000000000000000000000000000000000000f000`
 - **Punish Contract:** `0x000000000000000000000000000000000000F001`
 - **Proposal Contract:** `0x000000000000000000000000000000000000F002`
+- **Slashing Contract:** `0x000000000000000000000000000000000000F007`
 
 ## Key Features
 

@@ -3,16 +3,6 @@
 
 This project aims to provide installation, running, and maintenance capabilities of **Splendor RPC validator node** for potential and existing Splendor RPC Blockchain backers. The consensus structure of this chain is delegated proof of stake "DPos" and is governed by the symbiosis of Splendor RPC's implementation of go-ethereum and our system contracts. This repository has multiple release candidates inline so we recommend checking for updates for better functions and stability.
 
-
-## Acknowledgements
-Splendor blockchain node inherits its core components from heco-chain project by stars-lab which itself is based on geth by the Ethereum foundation.
-
- - [Go ethereum](https://github.com/ethereum/go-ethereum)
- - [heco-chain](https://github.com/stars-labs/heco-chain)
-
-The revolution started by Bitcoin and later fueled by Ethereum Foundation has launched a wide array of technological advancements and applications.
-We acknowledge and actively contribute to decentralization causes and derivatives.
-
 ## System Requirements
 
 ### Validator Nodes
@@ -79,7 +69,7 @@ To back the Splendor RPC blockchain you can become a validator. Full flow to bec
 * On your server, start the node that you just installed **([See Usage/Example](#usageexamples))**
 * Once the node is started and confirmation is seen on your terminal, open the interactive console by attaching tmux session **([See Usage/Example](#usageexamples))**
 * Once inside the interactive console, you'll see "IMPORTED TRANSACTION OBJECTS" and "age=<some period like 6d5hr or 5mon 3weeks>". You need to wait until the "unauthorized validator" warning starts to pop up on the console. 
-* Once "unauthorized validators" warning shows up, go to https://splendor-rpc.org/ and click "Become a validator". Fill in your validator name (moniker) and fee address field with the validator wallet address that you imported into your metamask. Proceed further
+* Once "unauthorized validators" warning shows up, go to https://dashboard.splendor.org/ and click "Become a Guardian". Fill in your validator name (moniker) and fee address field with the validator wallet address that you imported into your metamask. Proceed further
 * Once the last step is done, you'll see a "🔨 mined potential block" message on the interactive console. You'll also see your validator wallet as a validator on the staking page and on explorer. You should also detach from the console after the whole process is done **([See Usage/Example](#usageexamples))**
 ## Installation
 
