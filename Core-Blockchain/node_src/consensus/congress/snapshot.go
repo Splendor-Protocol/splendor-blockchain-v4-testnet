@@ -166,11 +166,37 @@ func (s *Snapshot) apply(headers []*types.Header, chain consensus.ChainHeaderRea
 				newValidators[validator] = struct{}{}
 			}
 
-			// need to delete recorded recent seen blocks if necessary, it may pause whole chain when validators length
-			// decreases.
-			limit := uint64(len(newValidators)/2 + 1)
-			for i := 0; i < len(snap.Validators)/2-len(newValidators)/2; i++ {
-				delete(snap.Recents, number-limit-uint64(i))
+			// Clean up recent validators when validator set changes to prevent chain halt
+			// This handles both validator addition and removal cases
+			oldValidatorCount := len(snap.Validators)
+			newValidatorCount := len(newValidators)
+			
+			// Calculate new limit for recent validators
+			newLimit := uint64(newValidatorCount/2 + 1)
+			
+			// If validator set is expanding, we need to be more aggressive in cleanup
+			// to prevent all validators from being marked as "recently signed"
+			if newValidatorCount > oldValidatorCount {
+				// Clear more recent entries when expanding validator set
+				// This prevents the "Signed recently, must wait for others" deadlock
+				for blockNum := range snap.Recents {
+					if number >= newLimit && blockNum <= number-newLimit {
+						delete(snap.Recents, blockNum)
+					}
+				}
+			} else if newValidatorCount < oldValidatorCount {
+				// Original logic for validator set reduction
+				oldLimit := uint64(oldValidatorCount/2 + 1)
+				for i := 0; i < oldValidatorCount/2-newValidatorCount/2; i++ {
+					delete(snap.Recents, number-oldLimit-uint64(i))
+				}
+			} else {
+				// Same validator count, just clean up old entries normally
+				for blockNum := range snap.Recents {
+					if number >= newLimit && blockNum <= number-newLimit {
+						delete(snap.Recents, blockNum)
+					}
+				}
 			}
 
 			snap.Validators = newValidators
