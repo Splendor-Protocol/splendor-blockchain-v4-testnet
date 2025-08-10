@@ -1166,10 +1166,32 @@ func (c *Congress) Seal(chain consensus.ChainHeaderReader, block *types.Block, r
 	for seen, recent := range snap.Recents {
 		if recent == val {
 			// Validator is among recents, only wait if the current block doesn't shift it out
-			if limit := uint64(len(snap.Validators)/2 + 1); number < limit || seen > number-limit {
-				log.Info("Signed recently, must wait for others")
-				return nil
+			limit := uint64(len(snap.Validators)/2 + 1)
+			
+			// More aggressive cleanup for Byzantine Fault Tolerance
+			// Allow signing if we're far enough from the limit or if validator set is expanding
+			if number >= limit && seen <= number-limit {
+				// Validator can sign - they're outside the recent limit
+				break
 			}
+			
+			// Additional check: if all validators are in recents (deadlock situation),
+			// allow the validator with the lowest recent block to sign
+			if len(snap.Recents) >= len(snap.Validators) {
+				oldestSeen := uint64(math.MaxUint64)
+				for recentSeen := range snap.Recents {
+					if recentSeen < oldestSeen {
+						oldestSeen = recentSeen
+					}
+				}
+				if seen == oldestSeen {
+					log.Info("Breaking Byzantine deadlock - allowing oldest recent validator to sign")
+					break
+				}
+			}
+			
+			log.Info("Signed recently, must wait for others")
+			return nil
 		}
 	}
 
