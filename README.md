@@ -29,7 +29,7 @@ Splendor Blockchain V4 is a production-ready mainnet that combines the best of E
 | **Network Name** | Splendor Testnet RPC |
 | **RPC URL** | https://testnet-rpc.splendor.org/ |
 | **Chain ID** | 2692 |
-| **Currency Symbol** | SPLDT |
+| **Currency Symbol** | tSPLDT |
 | **Block Explorer** | https://explorer.splendor.org/ |
 | **Block Time** | ~1 second |
 
@@ -93,9 +93,9 @@ Splendor uses an enhanced Proof of Authority consensus called "Congress" that pr
 ### Validator Tiers
 | Tier | Stake Required | Benefits |
 |------|----------------|----------|
-| **Bronze** | 3,947 SPLDT (~$1,500) | Entry-level validation |
-| **Silver** | 39,474 SPLDT (~$15,000) | Enhanced rewards |
-| **Gold** | 394,737 SPLDT (~$150,000) | Maximum rewards & governance |
+| **Bronze** | 3,947 tSPLDT (~$1,500) | Entry-level validation |
+| **Silver** | 39,474 tSPLDT (~$15,000) | Enhanced rewards |
+| **Gold** | 394,737 tSPLDT (~$150,000) | Maximum rewards & governance |
 
 ### System Contracts
 Pre-deployed contracts for network governance:
@@ -201,7 +201,7 @@ npx hardhat run scripts/deploy.js --network splendor
 - **Uptime**: 99.9%+ network availability
 
 ### Economic Model
-- **Gas Fees**: Starting at 1 gwei (0.000000001 SPLDT)
+- **Gas Fees**: Starting at 1 gwei (0.000000001 tSPLDT)
 - **Validator Rewards**: 60% of gas fees
 - **Staker Rewards**: 30% of gas fees
 - **Development Fund**: 10% of gas fees
@@ -224,7 +224,7 @@ npx hardhat run scripts/deploy.js --network splendor
 
 ### For Users
 1. **Set up MetaMask**: Follow our [MetaMask guide](docs/METAMASK_SETUP.md)
-2. **Get SPLDT tokens**: Purchase from supported exchanges
+2. **Get tSPLDT tokens**: Purchase from supported exchanges
 3. **Explore DApps**: Try decentralized applications
 4. **Join Community**: Connect with other users
 
@@ -236,7 +236,7 @@ npx hardhat run scripts/deploy.js --network splendor
 
 ### For Validators
 1. **Review Requirements**: Check [Validator Guide](docs/VALIDATOR_GUIDE.md)
-2. **Acquire Stake**: Get minimum 3,947 SPLDT
+2. **Acquire Stake**: Get minimum 3,947 tSPLDT
 3. **Set up Infrastructure**: Deploy validator node
 4. **Start Validating**: Earn rewards and secure the network
 
